@@ -1,0 +1,1977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a1a1a">
+<title>Ranieri-Dowling Drill</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,0..100;1,9..144,400..700,0..100&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Palette: editorial charcoal, paper-warm text, copper accent */
+    --bg: #1a1a1a;            /* near-black */
+    --bg-elev: #232220;       /* surface lift */
+    --bg-card: #2a2825;       /* card */
+    --ink: #f2ede3;            /* warm off-white, high contrast */
+    --ink-soft: #d4cdbe;       /* secondary */
+    --ink-mute: #978d7c;       /* muted */
+    --ink-faint: #5d574c;      /* very faded */
+    --accent: #d4915a;         /* warm copper, well-saturated */
+    --accent-dim: #9a6840;     /* duller copper */
+    --accent-soft: rgba(212,145,90,0.12);
+    --danger: #d96458;         /* terracotta red */
+    --danger-dim: #9c4a40;
+    --good: #84a984;           /* sage green */
+    --line: #36332f;           /* divider */
+    --line-strong: #46423d;    /* prominent divider */
+
+    /* Fraunces: distinctive optical-size serif. Source Serif for body. JetBrains Mono for figures. */
+    --serif: "Source Serif 4", "Source Serif Pro", Charter, "Iowan Old Style", "Palatino", Georgia, serif;
+    --display: "Fraunces", "Source Serif 4", Charter, "Palatino", Georgia, serif;
+    --mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, "SF Mono", "Menlo", "Consolas", monospace;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html {
+    background: var(--bg);
+  }
+  html, body {
+    margin: 0; padding: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.55;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    position: relative;
+  }
+  /* Fixed background overlay — works around iOS Safari background-attachment: fixed bugs */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background: var(--bg) radial-gradient(ellipse 100% 70% at 50% -10%, rgba(212,145,90,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  header.app-bar {
+    padding: 18px 22px 14px;
+    padding-top: max(18px, env(safe-area-inset-top));
+    background: rgba(22, 19, 16, 0.92);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 14px;
+  }
+  header.app-bar::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 1px;
+    background: linear-gradient(to right, transparent 0%, var(--accent) 30%, var(--accent) 70%, transparent 100%);
+    opacity: 0.5;
+  }
+
+  .app-bar-text { flex: 1; min-width: 0; }
+  .title {
+    font-family: var(--display);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    font-variation-settings: "opsz" 14;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .subtitle {
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-mute);
+    margin-top: 3px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .menu-btn {
+    background: transparent;
+    border: 1px solid var(--line-strong);
+    width: 38px; height: 38px;
+    border-radius: 2px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-size: 18px; line-height: 1;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    font-family: var(--serif);
+  }
+  .menu-btn:active {
+    background: var(--bg-card);
+    border-color: var(--accent-dim);
+    color: var(--accent);
+  }
+
+  main {
+    padding: 20px 22px 100px;
+    max-width: 720px;
+    margin: 0 auto;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ============ PICKER ============ */
+  .group-label {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    font-size: 11px;
+    font-weight: 600;
+    font-variation-settings: "opsz" 14;
+    color: var(--accent);
+    margin: 34px 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .group-label:first-of-type { margin-top: 8px; }
+  .group-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(to right, var(--line-strong), transparent);
+  }
+  .subgroup-label {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-mute);
+    margin: 18px 0 6px 0;
+  }
+  .subgroup-label::before {
+    content: '— ';
+    color: var(--ink-faint);
+  }
+
+  .paradigm-list { list-style: none; padding: 0; margin: 0; }
+  .paradigm-item {
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+    cursor: pointer;
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 14px;
+    transition: background 0.12s, padding-left 0.15s;
+  }
+  .paradigm-item:active {
+    background: var(--bg-card);
+    padding-left: 12px;
+  }
+  .paradigm-item:last-child { border-bottom: none; }
+
+  .paradigm-name {
+    font-size: 18px;
+    min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    color: var(--ink);
+  }
+  .paradigm-name .lemma {
+    font-family: var(--display);
+    font-weight: 500;
+    font-style: italic;
+    font-variation-settings: "opsz" 36, "SOFT" 30;
+    color: var(--ink);
+    font-size: 19px;
+    letter-spacing: -0.005em;
+  }
+  .paradigm-name .gloss {
+    font-family: var(--serif);
+    color: var(--ink-mute);
+    font-size: 14px;
+    font-style: normal;
+    margin-left: 6px;
+  }
+  .paradigm-name .gloss::before {
+    content: '· ';
+    color: var(--ink-faint);
+    margin-right: 2px;
+  }
+
+  .paradigm-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: -0.02em;
+  }
+  .paradigm-meta .form-count { color: var(--ink-faint); }
+  .reps-pip {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 2px 7px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--line-strong);
+    border-radius: 2px;
+    color: var(--ink-mute);
+    background: var(--bg-elev);
+  }
+  .reps-pip.partial {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+    background: rgba(212,145,90,0.06);
+  }
+  .reps-pip.done {
+    color: var(--bg);
+    background: var(--good);
+    border-color: var(--good);
+  }
+
+  /* Filter tabs */
+  .filter-tabs {
+    display: flex; gap: 0;
+    margin: 4px 0 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .filter-tab {
+    padding: 10px 14px;
+    border: none;
+    background: transparent;
+    color: var(--ink-mute);
+    font-family: var(--display);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.12s;
+  }
+  .filter-tab:active { color: var(--accent); }
+  .filter-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* ============ MODE PICKER ============ */
+  .lemma-display {
+    text-align: center;
+    margin: 30px 0 36px;
+    padding: 0 10px;
+  }
+  .lemma-display .lemma-big {
+    font-family: var(--display);
+    font-size: 60px;
+    line-height: 1;
+    font-style: italic;
+    font-weight: 500;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+    color: var(--ink);
+    display: inline-block;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--accent-dim);
+    letter-spacing: -0.01em;
+  }
+  .lemma-display .lemma-gloss {
+    font-family: var(--serif);
+    font-style: normal;
+    font-size: 15px;
+    color: var(--ink-mute);
+    margin-top: 14px;
+    letter-spacing: 0.02em;
+  }
+  .lemma-display .lemma-principal-parts {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+    margin-top: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  .mode-btn {
+    display: block; width: 100%;
+    padding: 18px 18px;
+    margin-bottom: 10px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-card);
+    color: var(--ink);
+    border-radius: 2px;
+    font-family: var(--serif); font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .mode-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    transform: translateX(-100%);
+    transition: transform 0.2s;
+  }
+  .mode-btn:active {
+    background: var(--bg-elev);
+    border-color: var(--accent-dim);
+  }
+  .mode-btn:active::before { transform: translateX(0); }
+  .mode-btn .mb-title {
+    font-family: var(--display);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-size: 12px;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 6px;
+  }
+  .mode-btn .mb-desc {
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+  .mode-btn .mb-stat {
+    font-family: var(--mono);
+    font-style: normal;
+    color: var(--ink-mute);
+    margin-left: 4px;
+    font-size: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ============ DRILL ============ */
+  .drill-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 18px;
+    padding-top: 4px;
+  }
+  .back-btn {
+    background: none; border: none;
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
+    padding: 8px 0; cursor: pointer;
+  }
+  .back-btn::before { content: '← '; opacity: 0.7; }
+  .drill-counter {
+    font-family: var(--mono);
+    color: var(--ink-mute);
+    font-size: 12px;
+  }
+  .drill-counter .of { color: var(--ink-faint); margin: 0 3px; }
+
+  .progress-bar {
+    height: 1px;
+    background: var(--line);
+    margin-bottom: 28px;
+    position: relative;
+  }
+  .progress-fill {
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.25s ease;
+    margin-top: -1px;
+    box-shadow: 0 0 8px rgba(212,145,90,0.35);
+  }
+
+  .prompt-label {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 9px;
+    color: var(--accent-dim);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .prompt-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: var(--line);
+  }
+
+  .prompt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--line-strong);
+    border-left: 2px solid var(--accent);
+    padding: 26px 22px;
+    margin-bottom: 20px;
+    border-radius: 0;
+  }
+  .prompt-question {
+    font-size: 19px;
+    line-height: 1.35;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .prompt-lemma {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 60, "SOFT" 40;
+    color: var(--ink);
+    font-weight: 500;
+    font-size: 30px;
+    letter-spacing: -0.01em;
+  }
+  .prompt-divider {
+    color: var(--ink-faint);
+    font-family: var(--display);
+  }
+  .prompt-spec {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+
+  .answer-input {
+    width: 100%;
+    padding: 18px 16px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 24px;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: var(--bg-elev);
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+    transition: all 0.15s;
+  }
+  .answer-input::placeholder {
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+  .answer-input:focus {
+    border-color: var(--accent);
+    background: var(--bg-card);
+    box-shadow: inset 0 0 0 1px rgba(212,145,90,0.18);
+  }
+  .answer-input.correct {
+    border-color: var(--good);
+    background: rgba(132,169,132,0.08);
+    color: var(--good);
+  }
+  .answer-input.wrong {
+    border-color: var(--danger);
+    background: rgba(217,100,88,0.06);
+  }
+
+  .feedback {
+    min-height: 48px;
+    margin-top: 14px;
+    font-size: 14px;
+    font-style: italic;
+    padding: 0 4px;
+  }
+  .feedback.correct { color: var(--good); }
+  .feedback.wrong { color: var(--danger); }
+  .feedback .truth {
+    font-style: normal; font-weight: 500;
+    font-family: var(--serif); font-size: 17px;
+    color: var(--ink);
+  }
+  .feedback .accepted {
+    font-size: 12px; color: var(--ink-mute);
+    font-style: italic; display: block; margin-top: 4px;
+  }
+  .feedback .accepted .truth { font-size: 14px; }
+
+  .actions { display: flex; gap: 8px; margin-top: 18px; }
+  button.btn {
+    flex: 1;
+    padding: 16px;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid var(--ink-mute);
+    background: var(--bg-card);
+    color: var(--ink);
+    border-radius: 0;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  button.btn:active {
+    background: var(--bg-elev);
+    border-color: var(--ink-soft);
+  }
+  button.btn.primary {
+    background: var(--accent);
+    color: #1a1208;
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+  button.btn.primary:active {
+    background: var(--accent-dim);
+    border-color: var(--accent-dim);
+  }
+  button.btn.ghost {
+    background: transparent;
+    border-color: var(--line-strong);
+    color: var(--ink-soft);
+  }
+  button.btn.ghost:active {
+    border-color: var(--ink-mute);
+    color: var(--ink);
+  }
+
+  /* ============ VERB SUB-TABLE PICKER ============ */
+  .subtable-picker {
+    margin-bottom: 18px;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-radius: 0;
+  }
+  .subtable-picker-label {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 9px;
+    color: var(--accent-dim);
+    margin-bottom: 6px;
+    margin-top: 10px;
+  }
+  .subtable-picker-label:first-child { margin-top: 0; }
+  .pill-row {
+    display: flex; gap: 4px; flex-wrap: wrap;
+  }
+  .pill {
+    padding: 6px 11px;
+    border: 1px solid var(--line-strong);
+    background: transparent;
+    color: var(--ink-mute);
+    font-family: var(--serif);
+    font-size: 12px;
+    font-style: italic;
+    border-radius: 1px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.12s;
+  }
+  .pill:active { color: var(--ink); }
+  .pill.active {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+    font-style: normal;
+  }
+  .pill:disabled { opacity: 0.25; cursor: not-allowed; }
+
+  /* ============ TABLE MODE ============ */
+  .paradigm-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--line-strong);
+    border-left: 2px solid var(--accent);
+    padding: 18px 14px;
+    margin-bottom: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .paradigm-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+  }
+  .paradigm-table th, .paradigm-table td {
+    padding: 7px 5px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .paradigm-table th {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 9px;
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 10px;
+    padding-top: 4px;
+  }
+  .paradigm-table th.row-label,
+  .paradigm-table td.row-label {
+    text-align: right;
+    padding-right: 12px;
+    width: 56px;
+    color: var(--accent);
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .paradigm-table td.row-label { padding-top: 14px; padding-bottom: 10px; }
+  .paradigm-table tbody tr { border-top: 1px solid var(--line); }
+  .paradigm-table tbody tr:first-child { border-top: none; }
+  .gender-header {
+    color: var(--ink-mute) !important;
+    font-style: italic;
+    text-transform: lowercase !important;
+    letter-spacing: 0 !important;
+    font-family: var(--serif) !important;
+    font-size: 11px !important;
+  }
+
+  .cell-input {
+    width: 100%;
+    min-width: 64px;
+    padding: 9px 6px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    border: 1px solid transparent;
+    border-bottom: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+    -webkit-appearance: none;
+    text-align: center;
+    transition: all 0.12s;
+  }
+  .cell-input::placeholder { color: var(--ink-faint); }
+  .cell-input:focus {
+    border-color: var(--accent);
+    background: var(--bg-elev);
+    color: var(--ink);
+  }
+  .cell-input.correct {
+    background: rgba(132,169,132,0.1);
+    border-color: var(--good);
+    color: var(--good);
+    font-weight: 500;
+  }
+  .cell-input.wrong {
+    background: rgba(217,100,88,0.08);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  .cell-input.revealed {
+    background: var(--bg-elev);
+    border-color: var(--line-strong);
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .cell-empty {
+    color: var(--ink-faint); opacity: 0.5;
+    font-family: var(--mono);
+  }
+
+  .table-stats {
+    display: flex; gap: 16px; justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+  }
+  .table-stats .stat-label {
+    color: var(--ink-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 9px;
+    font-family: var(--display);
+    margin-right: 4px;
+  }
+  .table-stats .stat-val { font-weight: 600; color: var(--ink); }
+  .table-stats .stat-val.ok { color: var(--good); }
+  .table-stats .stat-val.bad { color: var(--danger); }
+
+  /* ============ COMPLETION ============ */
+  .completion {
+    text-align: center;
+    padding: 50px 18px 30px;
+  }
+  .completion::before {
+    content: '✦';
+    display: block;
+    color: var(--accent);
+    font-size: 22px;
+    margin-bottom: 30px;
+    opacity: 0.6;
+  }
+  .completion h2 {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: var(--accent);
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .completion .repetitio-number {
+    font-family: var(--display);
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 100;
+    color: var(--accent);
+    font-size: 72px;
+    font-weight: 500;
+    margin: 8px 0 4px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .completion .stats {
+    font-style: italic; font-size: 16px;
+    color: var(--ink-soft);
+    margin: 20px 0 32px;
+  }
+  .completion .stats b {
+    font-style: normal;
+    color: var(--ink);
+    font-family: var(--serif);
+    font-weight: 600;
+  }
+  .completion .stats .missed { color: var(--ink-mute); }
+
+  .rep-counter { padding: 6px 0 20px; }
+  .rep-counter .big {
+    font-family: var(--mono);
+    font-size: 16px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .rep-counter .big .target { color: var(--ink-faint); }
+  .rep-counter .lbl {
+    font-style: italic; font-size: 12px;
+    color: var(--ink-mute);
+    margin-top: 6px;
+    text-transform: lowercase;
+  }
+  .rep-counter .progress-bar {
+    max-width: 280px; margin: 14px auto 0;
+    background: var(--line);
+  }
+
+  /* ============ SETTINGS ============ */
+  .modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 20px;
+  }
+  .modal {
+    background: var(--bg-card);
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    padding: 24px 22px;
+    max-width: 440px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    position: relative;
+  }
+  .modal::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+  }
+  .modal h3 {
+    margin: 0 0 14px;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    font-size: 11px; color: var(--accent);
+    font-weight: 600;
+  }
+  .modal h3:not(:first-child) {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+  }
+  .modal .row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+  }
+  .modal .row label {
+    flex: 1; cursor: pointer;
+    font-family: var(--serif);
+    color: var(--ink);
+  }
+  .modal .row .row-detail {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+  .modal textarea {
+    width: 100%; min-height: 110px;
+    padding: 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+    border: 1px solid var(--line-strong);
+    border-radius: 0;
+    background: var(--bg);
+    color: var(--ink-soft);
+    resize: vertical;
+    margin-top: 8px;
+    letter-spacing: -0.01em;
+  }
+  .modal .small-actions { display: flex; gap: 6px; margin-top: 10px; }
+  .small-btn {
+    padding: 8px 12px;
+    font-size: 10px;
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    border-radius: 0;
+    cursor: pointer;
+    color: var(--ink-soft);
+    transition: all 0.12s;
+  }
+  .small-btn:active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .small-btn.danger {
+    color: var(--danger);
+    border-color: var(--danger-dim);
+  }
+  .small-btn.danger:active {
+    background: rgba(217,100,88,0.1);
+  }
+  .small-msg {
+    font-size: 11px; color: var(--ink-mute);
+    font-style: italic; margin-top: 8px;
+    min-height: 14px;
+  }
+  .small-msg.success { color: var(--good); }
+  .small-msg.error { color: var(--danger); }
+
+  .toggle {
+    position: relative;
+    width: 42px; height: 24px;
+    background: var(--bg);
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    top: 1px; left: 1px;
+    width: 20px; height: 20px;
+    background: var(--ink-mute);
+    border-radius: 50%;
+    transition: all 0.18s ease;
+  }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle.on::after { left: 19px; background: var(--bg); }
+  .toggle input { display: none; }
+
+  .loader {
+    text-align: center; padding: 60px 20px;
+    font-style: italic; color: var(--ink-mute);
+    font-family: var(--serif);
+  }
+
+  @keyframes fadein {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  main > * { animation: fadein 0.25s ease-out both; }
+
+</style>
+</head>
+<body>
+<header class="app-bar">
+  <div class="app-bar-text">
+    <div class="title" id="bar-title">Ranieri-Dowling</div>
+    <div class="subtitle" id="bar-subtitle">Latin paradigm drill</div>
+  </div>
+  <button class="menu-btn" id="menu-btn" title="Settings" aria-label="Settings">⚙</button>
+</header>
+<main id="app"><div class="loader">…</div></main>
+<div id="modal-root"></div>
+
+<script>
+window.__PARADIGMS__ = [{"id":"1st decl::rosa","sheet":"1st decl","category":"noun","name":"rosa — rose (f.)","prompts":[{"label":"nom sing.","answer":"rosa"},{"label":"nom pl.","answer":"rosae"},{"label":"gen sing.","answer":"rosae"},{"label":"gen pl.","answer":"rosārum"},{"label":"dat sing.","answer":"rosae"},{"label":"dat pl.","answer":"rosīs"},{"label":"acc sing.","answer":"rosam"},{"label":"acc pl.","answer":"rosās"},{"label":"abl sing.","answer":"rosā"},{"label":"abl pl.","answer":"rosīs"}]},{"id":"2nd decl::amīcus","sheet":"2nd decl","category":"noun","name":"amīcus — friend (m.)","prompts":[{"label":"nom sing.","answer":"amīcus"},{"label":"nom pl.","answer":"amīcī"},{"label":"gen sing.","answer":"amīcī"},{"label":"gen pl.","answer":"amīcōrum"},{"label":"dat sing.","answer":"amīcō"},{"label":"dat pl.","answer":"amīcīs"},{"label":"acc sing.","answer":"amīcum"},{"label":"acc pl.","answer":"amīcōs"},{"label":"abl sing.","answer":"amīcō"},{"label":"abl pl.","answer":"amīcīs"},{"label":"voc sing.","answer":"amīce"}]},{"id":"2nd decl::fīlius","sheet":"2nd decl","category":"noun","name":"fīlius — son (m.)","prompts":[{"label":"nom sing.","answer":"fīlius"},{"label":"nom pl.","answer":"fīliī"},{"label":"gen sing.","answer":"fīliī"},{"label":"gen pl.","answer":"fīliōrum"},{"label":"dat sing.","answer":"fīliō"},{"label":"dat pl.","answer":"fīliīs"},{"label":"acc sing.","answer":"fīlium"},{"label":"acc pl.","answer":"fīliōs"},{"label":"abl sing.","answer":"fīliō"},{"label":"abl pl.","answer":"fīliīs"},{"label":"voc sing.","answer":"fīlī"}]},{"id":"2nd decl::puer","sheet":"2nd decl","category":"noun","name":"puer — boy (m.)","prompts":[{"label":"nom sing.","answer":"puer"},{"label":"nom pl.","answer":"puerī"},{"label":"gen sing.","answer":"puerī"},{"label":"gen pl.","answer":"puerōrum"},{"label":"dat sing.","answer":"puerō"},{"label":"dat pl.","answer":"puerīs"},{"label":"acc sing.","answer":"puerum"},{"label":"acc pl.","answer":"puerōs"},{"label":"abl sing.","answer":"puerō"},{"label":"abl pl.","answer":"puerīs"}]},{"id":"2nd decl::ager","sheet":"2nd decl","category":"noun","name":"ager — field (m.)","prompts":[{"label":"nom sing.","answer":"ager"},{"label":"nom pl.","answer":"agrī"},{"label":"gen sing.","answer":"agrī"},{"label":"gen pl.","answer":"agrōrum"},{"label":"dat sing.","answer":"agrō"},{"label":"dat pl.","answer":"agrīs"},{"label":"acc sing.","answer":"agrum"},{"label":"acc pl.","answer":"agrōs"},{"label":"abl sing.","answer":"agrō"},{"label":"abl pl.","answer":"agrīs"}]},{"id":"2nd decl::dōnum","sheet":"2nd decl","category":"noun","name":"dōnum — gift (n.)","prompts":[{"label":"nom sing.","answer":"dōnum"},{"label":"nom pl.","answer":"dōna"},{"label":"gen sing.","answer":"dōnī"},{"label":"gen pl.","answer":"dōnōrum"},{"label":"dat sing.","answer":"dōnō"},{"label":"dat pl.","answer":"dōnīs"},{"label":"acc sing.","answer":"dōnum"},{"label":"acc pl.","answer":"dōna"},{"label":"abl sing.","answer":"dōnō"},{"label":"abl pl.","answer":"dōnīs"}]},{"id":"3rd decl::rēx","sheet":"3rd decl","category":"noun","name":"rēx — king (m.)","prompts":[{"label":"nom sing.","answer":"rēx"},{"label":"nom pl.","answer":"rēgēs"},{"label":"gen sing.","answer":"rēgis"},{"label":"gen pl.","answer":"rēgum"},{"label":"dat sing.","answer":"rēgī"},{"label":"dat pl.","answer":"rēgibus"},{"label":"acc sing.","answer":"rēgem"},{"label":"acc pl.","answer":"rēgēs"},{"label":"abl sing.","answer":"rēge"},{"label":"abl pl.","answer":"rēgibus"}]},{"id":"3rd decl::corpus","sheet":"3rd decl","category":"noun","name":"corpus — body (n.)","prompts":[{"label":"nom sing.","answer":"corpus"},{"label":"nom pl.","answer":"corpora"},{"label":"gen sing.","answer":"corporis"},{"label":"gen pl.","answer":"corporum"},{"label":"dat sing.","answer":"corporī"},{"label":"dat pl.","answer":"corporibus"},{"label":"acc sing.","answer":"corpus"},{"label":"acc pl.","answer":"corpora"},{"label":"abl sing.","answer":"corpore"},{"label":"abl pl.","answer":"corporibus"}]},{"id":"3rd decl::ovis","sheet":"3rd decl","category":"noun","name":"ovis — sheep (f.)","prompts":[{"label":"nom sing.","answer":"ovis"},{"label":"nom pl.","answer":"ovēs"},{"label":"gen sing.","answer":"ovis"},{"label":"gen pl.","answer":"ovium"},{"label":"dat sing.","answer":"ovī"},{"label":"dat pl.","answer":"ovibus"},{"label":"acc sing.","answer":"ovem"},{"label":"acc pl.","answer":"ovīs/ovēs"},{"label":"abl sing.","answer":"ove"},{"label":"abl pl.","answer":"ovibus"}]},{"id":"3rd decl::urbs","sheet":"3rd decl","category":"noun","name":"urbs — city (f.)","prompts":[{"label":"nom sing.","answer":"urbs"},{"label":"nom pl.","answer":"urbēs"},{"label":"gen sing.","answer":"urbis"},{"label":"gen pl.","answer":"urbium"},{"label":"dat sing.","answer":"urbī"},{"label":"dat pl.","answer":"urbibus"},{"label":"acc sing.","answer":"urbem"},{"label":"acc pl.","answer":"urbīs/urbēs"},{"label":"abl sing.","answer":"urbe"},{"label":"abl pl.","answer":"urbibus"}]},{"id":"3rd decl::mare","sheet":"3rd decl","category":"noun","name":"mare — sea (n.)","prompts":[{"label":"nom sing.","answer":"mare"},{"label":"nom pl.","answer":"maria"},{"label":"gen sing.","answer":"maris"},{"label":"gen pl.","answer":"marium"},{"label":"dat sing.","answer":"marī"},{"label":"dat pl.","answer":"maribus"},{"label":"acc sing.","answer":"mare"},{"label":"acc pl.","answer":"maria"},{"label":"abl sing.","answer":"marī"},{"label":"abl pl.","answer":"maribus"}]},{"id":"3rd decl::vīs","sheet":"3rd decl","category":"noun","name":"vīs — force (f.)","prompts":[{"label":"nom sing.","answer":"vīs"},{"label":"nom pl.","answer":"vīrēs"},{"label":"gen sing.","answer":"vīs"},{"label":"gen pl.","answer":"vīrium"},{"label":"dat sing.","answer":"vī"},{"label":"dat pl.","answer":"vīribus"},{"label":"acc sing.","answer":"vim"},{"label":"acc pl.","answer":"vīrīs/vīrēs"},{"label":"abl sing.","answer":"vī"},{"label":"abl pl.","answer":"vīribus"}]},{"id":"4th decl::frūctus","sheet":"4th decl","category":"noun","name":"frūctus — fruit (m.)","prompts":[{"label":"nom sing.","answer":"frūctus"},{"label":"nom pl.","answer":"frūctūs"},{"label":"gen sing.","answer":"frūctūs"},{"label":"gen pl.","answer":"frūctuum"},{"label":"dat sing.","answer":"frūctuī"},{"label":"dat pl.","answer":"frūctibus"},{"label":"acc sing.","answer":"frūctum"},{"label":"acc pl.","answer":"frūctūs"},{"label":"abl sing.","answer":"frūctū"},{"label":"abl pl.","answer":"frūctibus"}]},{"id":"4th decl::genū","sheet":"4th decl","category":"noun","name":"genū — knee (n.)","prompts":[{"label":"nom sing.","answer":"genū"},{"label":"nom pl.","answer":"genua"},{"label":"gen sing.","answer":"genūs"},{"label":"gen pl.","answer":"genuum"},{"label":"dat sing.","answer":"genuī/genū"},{"label":"dat pl.","answer":"genibus"},{"label":"acc sing.","answer":"genū"},{"label":"acc pl.","answer":"genua"},{"label":"abl sing.","answer":"genū"},{"label":"abl pl.","answer":"genibus"}]},{"id":"5th decl::rēs","sheet":"5th decl","category":"noun","name":"rēs — thing (f.)","prompts":[{"label":"nom sing.","answer":"rēs"},{"label":"nom pl.","answer":"rēs"},{"label":"gen sing.","answer":"reī"},{"label":"gen pl.","answer":"rērum"},{"label":"dat sing.","answer":"reī"},{"label":"dat pl.","answer":"rēbus"},{"label":"acc sing.","answer":"rem"},{"label":"acc pl.","answer":"rēs"},{"label":"abl sing.","answer":"rē"},{"label":"abl pl.","answer":"rēbus"}]},{"id":"Adjectives::magnus","sheet":"Adjectives","category":"adjective","section":"First Class (1st & 2nd Declension) Adjectives","name":"magnus — large","prompts":[{"label":"nom sing. m.","answer":"magnus"},{"label":"nom sing. f.","answer":"magna"},{"label":"nom sing. n.","answer":"magnum"},{"label":"gen sing. m.","answer":"magnī"},{"label":"gen sing. f.","answer":"magnae"},{"label":"gen sing. n.","answer":"magnī"},{"label":"dat sing. m.","answer":"magnō"},{"label":"dat sing. f.","answer":"magnae"},{"label":"dat sing. n.","answer":"magnō"},{"label":"acc sing. m.","answer":"magnum"},{"label":"acc sing. f.","answer":"magnam"},{"label":"acc sing. n.","answer":"magnum"},{"label":"abl sing. m.","answer":"magnō"},{"label":"abl sing. f.","answer":"magnā"},{"label":"abl sing. n.","answer":"magnō"},{"label":"voc sing. m.","answer":"magne"},{"label":"nom pl. m.","answer":"magnī"},{"label":"nom pl. f.","answer":"magnae"},{"label":"nom pl. n.","answer":"magna"},{"label":"gen pl. m.","answer":"magnōrum"},{"label":"gen pl. f.","answer":"magnārum"},{"label":"gen pl. n.","answer":"magnōrum"},{"label":"dat pl. m.","answer":"magnīs"},{"label":"dat pl. f.","answer":"magnīs"},{"label":"dat pl. n.","answer":"magnīs"},{"label":"acc pl. m.","answer":"magnōs"},{"label":"acc pl. f.","answer":"magnās"},{"label":"acc pl. n.","answer":"magna"},{"label":"abl pl. m.","answer":"magnīs"},{"label":"abl pl. f.","answer":"magnīs"},{"label":"abl pl. n.","answer":"magnīs"}]},{"id":"Adjectives::līber","sheet":"Adjectives","category":"adjective","section":"First Class (1st & 2nd Declension) Adjectives","name":"līber — free","prompts":[{"label":"nom sing. m.","answer":"līber"},{"label":"nom sing. f.","answer":"lībera"},{"label":"nom sing. n.","answer":"līberum"},{"label":"gen sing. m.","answer":"līberī"},{"label":"gen sing. f.","answer":"līberae"},{"label":"gen sing. n.","answer":"līberī"},{"label":"dat sing. m.","answer":"līberō"},{"label":"dat sing. f.","answer":"līberae"},{"label":"dat sing. n.","answer":"līberō"},{"label":"acc sing. m.","answer":"līberum"},{"label":"acc sing. f.","answer":"līberam"},{"label":"acc sing. n.","answer":"līberum"},{"label":"abl sing. m.","answer":"līberō"},{"label":"abl sing. f.","answer":"līberā"},{"label":"abl sing. n.","answer":"līberō"},{"label":"nom pl. m.","answer":"līberī"},{"label":"nom pl. f.","answer":"līberae"},{"label":"nom pl. n.","answer":"lībera"},{"label":"gen pl. m.","answer":"līberōrum"},{"label":"gen pl. f.","answer":"līberārum"},{"label":"gen pl. n.","answer":"līberōrum"},{"label":"dat pl. m.","answer":"līberīs"},{"label":"dat pl. f.","answer":"līberīs"},{"label":"dat pl. n.","answer":"līberīs"},{"label":"acc pl. m.","answer":"līberōs"},{"label":"acc pl. f.","answer":"līberās"},{"label":"acc pl. n.","answer":"lībera"},{"label":"abl pl. m.","answer":"līberīs"},{"label":"abl pl. f.","answer":"līberīs"},{"label":"abl pl. n.","answer":"līberīs"}]},{"id":"Adjectives::pulcher","sheet":"Adjectives","category":"adjective","section":"First Class (1st & 2nd Declension) Adjectives","name":"pulcher — beautiful","prompts":[{"label":"nom sing. m.","answer":"pulcher"},{"label":"nom sing. f.","answer":"pulchra"},{"label":"nom sing. n.","answer":"pulchrum"},{"label":"gen sing. m.","answer":"pulchrī"},{"label":"gen sing. f.","answer":"pulchrae"},{"label":"gen sing. n.","answer":"pulchrī"},{"label":"dat sing. m.","answer":"pulchrō"},{"label":"dat sing. f.","answer":"pulchrae"},{"label":"dat sing. n.","answer":"pulchrō"},{"label":"acc sing. m.","answer":"pulchrum"},{"label":"acc sing. f.","answer":"pulchram"},{"label":"acc sing. n.","answer":"pulchrum"},{"label":"abl sing. m.","answer":"pulchrō"},{"label":"abl sing. f.","answer":"pulchrā"},{"label":"abl sing. n.","answer":"pulchrō"},{"label":"nom pl. m.","answer":"pulchrī"},{"label":"nom pl. f.","answer":"pulchrae"},{"label":"nom pl. n.","answer":"pulchra"},{"label":"gen pl. m.","answer":"pulchrōrum"},{"label":"gen pl. f.","answer":"pulchrārum"},{"label":"gen pl. n.","answer":"pulchrōrum"},{"label":"dat pl. m.","answer":"pulchrīs"},{"label":"dat pl. f.","answer":"pulchrīs"},{"label":"dat pl. n.","answer":"pulchrīs"},{"label":"acc pl. m.","answer":"pulchrōs"},{"label":"acc pl. f.","answer":"pulchrās"},{"label":"acc pl. n.","answer":"pulchra"},{"label":"abl pl. m.","answer":"pulchrīs"},{"label":"abl pl. f.","answer":"pulchrīs"},{"label":"abl pl. n.","answer":"pulchrīs"}]},{"id":"Adjectives::fortis","sheet":"Adjectives","category":"adjective","section":"Second Class (3rd Declension) Adjectives","name":"fortis — strong","prompts":[{"label":"nom sing. m. & f.","answer":"fortis"},{"label":"nom sing. n.","answer":"forte"},{"label":"gen sing. m. & f.","answer":"fortis"},{"label":"gen sing. n.","answer":"fortis"},{"label":"dat sing. m. & f.","answer":"fortī"},{"label":"dat sing. n.","answer":"fortī"},{"label":"acc sing. m. & f.","answer":"fortem"},{"label":"acc sing. n.","answer":"forte"},{"label":"abl sing. m. & f.","answer":"fortī"},{"label":"abl sing. n.","answer":"fortī"},{"label":"nom pl. m. & f.","answer":"fortēs"},{"label":"nom pl. n.","answer":"fortia"},{"label":"gen pl. m. & f.","answer":"fortium"},{"label":"gen pl. n.","answer":"fortium"},{"label":"dat pl. m. & f.","answer":"fortibus"},{"label":"dat pl. n.","answer":"fortibus"},{"label":"acc pl. m. & f.","answer":"fortīs/fortēs"},{"label":"acc pl. n.","answer":"fortia"},{"label":"abl pl. m. & f.","answer":"fortibus"},{"label":"abl pl. n.","answer":"fortibus"}]},{"id":"Adjectives::ācer","sheet":"Adjectives","category":"adjective","section":"Second Class (3rd Declension) Adjectives","name":"ācer — sharp","prompts":[{"label":"nom sing. m.","answer":"ācer"},{"label":"nom sing. f.","answer":"ācris"},{"label":"nom sing. n.","answer":"ācre"},{"label":"gen sing. m.","answer":"ācris"},{"label":"gen sing. f.","answer":"ācris"},{"label":"gen sing. n.","answer":"ācris"},{"label":"dat sing. m.","answer":"ācrī"},{"label":"dat sing. f.","answer":"ācrī"},{"label":"dat sing. n.","answer":"ācrī"},{"label":"acc sing. m.","answer":"ācrem"},{"label":"acc sing. f.","answer":"ācrem"},{"label":"acc sing. n.","answer":"ācre"},{"label":"abl sing. m.","answer":"ācrī"},{"label":"abl sing. f.","answer":"ācrī"},{"label":"abl sing. n.","answer":"ācrī"},{"label":"nom pl. m.","answer":"ācrēs"},{"label":"nom pl. f.","answer":"ācrēs"},{"label":"nom pl. n.","answer":"ācria"},{"label":"gen pl. m.","answer":"ācrium"},{"label":"gen pl. f.","answer":"ācrium"},{"label":"gen pl. n.","answer":"ācrium"},{"label":"dat pl. m.","answer":"ācribus"},{"label":"dat pl. f.","answer":"ācribus"},{"label":"dat pl. n.","answer":"ācribus"},{"label":"acc pl. m.","answer":"ācrīs/ācrēs"},{"label":"acc pl. f.","answer":"ācrīs/ācrēs"},{"label":"acc pl. n.","answer":"ācria"},{"label":"abl pl. m.","answer":"ācribus"},{"label":"abl pl. f.","answer":"ācribus"},{"label":"abl pl. n.","answer":"ācribus"}]},{"id":"Adjectives::potēns","sheet":"Adjectives","category":"adjective","section":"Second Class (3rd Declension) Adjectives","name":"potēns — powerful","prompts":[{"label":"nom sing. m. & f.","answer":"potēns"},{"label":"nom sing. n.","answer":"potēns"},{"label":"gen sing. m. & f.","answer":"potentis"},{"label":"gen sing. n.","answer":"potentis"},{"label":"dat sing. m. & f.","answer":"potentī"},{"label":"dat sing. n.","answer":"potentī"},{"label":"acc sing. m. & f.","answer":"potentem"},{"label":"acc sing. n.","answer":"potēns"},{"label":"abl sing. m. & f.","answer":"potentī"},{"label":"abl sing. n.","answer":"potentī"},{"label":"nom pl. m. & f.","answer":"potentēs"},{"label":"nom pl. n.","answer":"potentia"},{"label":"gen pl. m. & f.","answer":"potentium"},{"label":"gen pl. n.","answer":"potentium"},{"label":"dat pl. m. & f.","answer":"potentibus"},{"label":"dat pl. n.","answer":"potentibus"},{"label":"acc pl. m. & f.","answer":"potentīs/-ēs"},{"label":"acc pl. n.","answer":"potentia"},{"label":"abl pl. m. & f.","answer":"potentibus"},{"label":"abl pl. n.","answer":"potentibus"}]},{"id":"Adjectives::fortior","sheet":"Adjectives","category":"adjective","section":"regular comparatives","name":"fortior — stronger","prompts":[{"label":"nom sing. m. & f.","answer":"fortior"},{"label":"nom sing. n.","answer":"fortius"},{"label":"gen sing. m. & f.","answer":"fortiōris"},{"label":"gen sing. n.","answer":"fortiōris"},{"label":"dat sing. m. & f.","answer":"fortiōrī"},{"label":"dat sing. n.","answer":"fortiōrī"},{"label":"acc sing. m. & f.","answer":"fortiōrem"},{"label":"acc sing. n.","answer":"fortius"},{"label":"abl sing. m. & f.","answer":"fortiōre"},{"label":"abl sing. n.","answer":"fortiōre"},{"label":"nom pl. m. & f.","answer":"fortiōrēs"},{"label":"nom pl. n.","answer":"fortiōra"},{"label":"gen pl. m. & f.","answer":"fortiōrum"},{"label":"gen pl. n.","answer":"fortiōrum"},{"label":"dat pl. m. & f.","answer":"fortiōribus"},{"label":"dat pl. n.","answer":"fortiōribus"},{"label":"acc pl. m. & f.","answer":"fortiōrēs"},{"label":"acc pl. n.","answer":"fortiōra"},{"label":"abl pl. m. & f.","answer":"fortiōribus"},{"label":"abl pl. n.","answer":"fortiōribus"}]},{"id":"Pronouns::hic","sheet":"Pronouns","category":"pronoun","section":"demonstratives","name":"hic — this","prompts":[{"label":"nom sing. m.","answer":"hic"},{"label":"nom sing. f.","answer":"haec"},{"label":"nom sing. n.","answer":"hoc"},{"label":"gen sing. m.","answer":"hujus"},{"label":"gen sing. f.","answer":"hujus"},{"label":"gen sing. n.","answer":"hujus"},{"label":"dat sing. m.","answer":"huic"},{"label":"dat sing. f.","answer":"huic"},{"label":"dat sing. n.","answer":"huic"},{"label":"acc sing. m.","answer":"hunc"},{"label":"acc sing. f.","answer":"hanc"},{"label":"acc sing. n.","answer":"hoc"},{"label":"abl sing. m.","answer":"hōc"},{"label":"abl sing. f.","answer":"hāc"},{"label":"abl sing. n.","answer":"hōc"},{"label":"nom pl. m.","answer":"hī"},{"label":"nom pl. f.","answer":"hae"},{"label":"nom pl. n.","answer":"haec"},{"label":"gen pl. m.","answer":"hōrum"},{"label":"gen pl. f.","answer":"hārum"},{"label":"gen pl. n.","answer":"hōrum"},{"label":"dat pl. m.","answer":"hīs"},{"label":"dat pl. f.","answer":"hīs"},{"label":"dat pl. n.","answer":"hīs"},{"label":"acc pl. m.","answer":"hōs"},{"label":"acc pl. f.","answer":"hās"},{"label":"acc pl. n.","answer":"haec"},{"label":"abl pl. m.","answer":"hīs"},{"label":"abl pl. f.","answer":"hīs"},{"label":"abl pl. n.","answer":"hīs"}]},{"id":"Pronouns::iste","sheet":"Pronouns","category":"pronoun","section":"demonstratives","name":"iste — that (by you)","prompts":[{"label":"nom sing. m.","answer":"iste"},{"label":"nom sing. f.","answer":"ista"},{"label":"nom sing. n.","answer":"istud"},{"label":"gen sing. m.","answer":"istīus"},{"label":"gen sing. f.","answer":"istīus"},{"label":"gen sing. n.","answer":"istīus"},{"label":"dat sing. m.","answer":"istī"},{"label":"dat sing. f.","answer":"istī"},{"label":"dat sing. n.","answer":"istī"},{"label":"acc sing. m.","answer":"istum"},{"label":"acc sing. f.","answer":"istam"},{"label":"acc sing. n.","answer":"istud"},{"label":"abl sing. m.","answer":"istō"},{"label":"abl sing. f.","answer":"istā"},{"label":"abl sing. n.","answer":"istō"},{"label":"nom pl. m.","answer":"istī"},{"label":"nom pl. f.","answer":"istae"},{"label":"nom pl. n.","answer":"ista"},{"label":"gen pl. m.","answer":"istōrum"},{"label":"gen pl. f.","answer":"istārum"},{"label":"gen pl. n.","answer":"istōrum"},{"label":"dat pl. m.","answer":"istīs"},{"label":"dat pl. f.","answer":"istīs"},{"label":"dat pl. n.","answer":"istīs"},{"label":"acc pl. m.","answer":"istōs"},{"label":"acc pl. f.","answer":"istās"},{"label":"acc pl. n.","answer":"ista"},{"label":"abl pl. m.","answer":"istīs"},{"label":"abl pl. f.","answer":"istīs"},{"label":"abl pl. n.","answer":"istīs"}]},{"id":"Pronouns::ille","sheet":"Pronouns","category":"pronoun","section":"demonstratives","name":"ille — that (yonder)","prompts":[{"label":"nom sing. m.","answer":"ille"},{"label":"nom sing. f.","answer":"illa"},{"label":"nom sing. n.","answer":"illud"},{"label":"gen sing. m.","answer":"illīus"},{"label":"gen sing. f.","answer":"illīus"},{"label":"gen sing. n.","answer":"illīus"},{"label":"dat sing. m.","answer":"illī"},{"label":"dat sing. f.","answer":"illī"},{"label":"dat sing. n.","answer":"illī"},{"label":"acc sing. m.","answer":"illum"},{"label":"acc sing. f.","answer":"illam"},{"label":"acc sing. n.","answer":"illud"},{"label":"abl sing. m.","answer":"illō"},{"label":"abl sing. f.","answer":"illā"},{"label":"abl sing. n.","answer":"illō"},{"label":"nom pl. m.","answer":"illī"},{"label":"nom pl. f.","answer":"illae"},{"label":"nom pl. n.","answer":"illa"},{"label":"gen pl. m.","answer":"illōrum"},{"label":"gen pl. f.","answer":"illārum"},{"label":"gen pl. n.","answer":"illōrum"},{"label":"dat pl. m.","answer":"illīs"},{"label":"dat pl. f.","answer":"illīs"},{"label":"dat pl. n.","answer":"illīs"},{"label":"acc pl. m.","answer":"illōs"},{"label":"acc pl. f.","answer":"illās"},{"label":"acc pl. n.","answer":"illa"},{"label":"abl pl. m.","answer":"illīs"},{"label":"abl pl. f.","answer":"illīs"},{"label":"abl pl. n.","answer":"illīs"}]},{"id":"Pronouns::ipse","sheet":"Pronouns","category":"pronoun","section":"demonstratives","name":"ipse — the very","prompts":[{"label":"nom sing. m.","answer":"ipse"},{"label":"nom sing. f.","answer":"ipsa"},{"label":"nom sing. n.","answer":"ipsum"},{"label":"gen sing. m.","answer":"ipsīus"},{"label":"gen sing. f.","answer":"ipsīus"},{"label":"gen sing. n.","answer":"ipsīus"},{"label":"dat sing. m.","answer":"ipsī"},{"label":"dat sing. f.","answer":"ipsī"},{"label":"dat sing. n.","answer":"ipsī"},{"label":"acc sing. m.","answer":"ipsum"},{"label":"acc sing. f.","answer":"ipsam"},{"label":"acc sing. n.","answer":"ipsum"},{"label":"abl sing. m.","answer":"ipsō"},{"label":"abl sing. f.","answer":"ipsā"},{"label":"abl sing. n.","answer":"ipsō"},{"label":"nom pl. m.","answer":"ipsī"},{"label":"nom pl. f.","answer":"ipsae"},{"label":"nom pl. n.","answer":"ipsa"},{"label":"gen pl. m.","answer":"ipsōrum"},{"label":"gen pl. f.","answer":"ipsārum"},{"label":"gen pl. n.","answer":"ipsōrum"},{"label":"dat pl. m.","answer":"ipsīs"},{"label":"dat pl. f.","answer":"ipsīs"},{"label":"dat pl. n.","answer":"ipsīs"},{"label":"acc pl. m.","answer":"ipsōs"},{"label":"acc pl. f.","answer":"ipsās"},{"label":"acc pl. n.","answer":"ipsa"},{"label":"abl pl. m.","answer":"ipsīs"},{"label":"abl pl. f.","answer":"ipsīs"},{"label":"abl pl. n.","answer":"ipsīs"}]},{"id":"Pronouns::is","sheet":"Pronouns","category":"pronoun","section":"demonstratives","name":"is — this/he etc.","prompts":[{"label":"nom sing. m.","answer":"is"},{"label":"nom sing. f.","answer":"ea"},{"label":"nom sing. n.","answer":"id"},{"label":"gen sing. m.","answer":"ejus"},{"label":"gen sing. f.","answer":"ejus"},{"label":"gen sing. n.","answer":"ejus"},{"label":"dat sing. m.","answer":"eī"},{"label":"dat sing. f.","answer":"eī"},{"label":"dat sing. n.","answer":"eī"},{"label":"acc sing. m.","answer":"eum"},{"label":"acc sing. f.","answer":"eam"},{"label":"acc sing. n.","answer":"id"},{"label":"abl sing. m.","answer":"eō"},{"label":"abl sing. f.","answer":"eā"},{"label":"abl sing. n.","answer":"eō"},{"label":"nom pl. m.","answer":"iī/eī"},{"label":"nom pl. f.","answer":"eae"},{"label":"nom pl. n.","answer":"ea"},{"label":"gen pl. m.","answer":"eōrum"},{"label":"gen pl. f.","answer":"eārum"},{"label":"gen pl. n.","answer":"eōrum"},{"label":"dat pl. m.","answer":"iīs/eīs"},{"label":"dat pl. f.","answer":"iīs/eīs"},{"label":"dat pl. n.","answer":"iīs/eīs"},{"label":"acc pl. m.","answer":"eōs"},{"label":"acc pl. f.","answer":"eās"},{"label":"acc pl. n.","answer":"ea"},{"label":"abl pl. m.","answer":"iīs/eīs"},{"label":"abl pl. f.","answer":"iīs/eīs"},{"label":"abl pl. n.","answer":"iīs/eīs"}]},{"id":"Pronouns::īdem","sheet":"Pronouns","category":"pronoun","section":"demonstratives","name":"īdem — the same","prompts":[{"label":"nom sing. m.","answer":"īdem"},{"label":"nom sing. f.","answer":"eadem"},{"label":"nom sing. n.","answer":"idem"},{"label":"gen sing. m.","answer":"ejusdem"},{"label":"gen sing. f.","answer":"ejusdem"},{"label":"gen sing. n.","answer":"ejusdem"},{"label":"dat sing. m.","answer":"eīdem"},{"label":"dat sing. f.","answer":"eīdem"},{"label":"dat sing. n.","answer":"eīdem"},{"label":"acc sing. m.","answer":"eundem"},{"label":"acc sing. f.","answer":"eandem"},{"label":"acc sing. n.","answer":"idem"},{"label":"abl sing. m.","answer":"eōdem"},{"label":"abl sing. f.","answer":"eādem"},{"label":"abl sing. n.","answer":"eōdem"},{"label":"nom pl. m.","answer":"īdem/eīdem"},{"label":"nom pl. f.","answer":"eaedem"},{"label":"nom pl. n.","answer":"eadem"},{"label":"gen pl. m.","answer":"eōrundem"},{"label":"gen pl. f.","answer":"eārundem"},{"label":"gen pl. n.","answer":"eōrundem"},{"label":"dat pl. m.","answer":"iīsdem/eīsdem"},{"label":"dat pl. f.","answer":"iīsdem/eīsdem"},{"label":"dat pl. n.","answer":"iīsdem/eīsdem"},{"label":"acc pl. m.","answer":"eōsdem"},{"label":"acc pl. f.","answer":"eāsdem"},{"label":"acc pl. n.","answer":"eadem"},{"label":"abl pl. m.","answer":"iīsdem/eīsdem"},{"label":"abl pl. f.","answer":"iīsdem/eīsdem"},{"label":"abl pl. n.","answer":"iīsdem/eīsdem"}]},{"id":"Pronouns::quis/quī","sheet":"Pronouns","category":"pronoun","section":"interrogatives","name":"quis/quī — who/what/which","prompts":[{"label":"nom sing. m.","answer":"quis/quī"},{"label":"nom sing. f.","answer":"quae"},{"label":"nom sing. n.","answer":"quid/quod"},{"label":"gen sing. m.","answer":"cujus"},{"label":"gen sing. f.","answer":"cujus"},{"label":"gen sing. n.","answer":"cujus"},{"label":"dat sing. m.","answer":"cui"},{"label":"dat sing. f.","answer":"cui"},{"label":"dat sing. n.","answer":"cui"},{"label":"acc sing. m.","answer":"quem"},{"label":"acc sing. f.","answer":"quam"},{"label":"acc sing. n.","answer":"quid/quod"},{"label":"abl sing. m.","answer":"quō"},{"label":"abl sing. f.","answer":"quā"},{"label":"abl sing. n.","answer":"quō"},{"label":"nom pl. m.","answer":"quī"},{"label":"nom pl. f.","answer":"quae"},{"label":"nom pl. n.","answer":"quae"},{"label":"gen pl. m.","answer":"quōrum"},{"label":"gen pl. f.","answer":"quārum"},{"label":"gen pl. n.","answer":"quōrum"},{"label":"dat pl. m.","answer":"quibus"},{"label":"dat pl. f.","answer":"quibus"},{"label":"dat pl. n.","answer":"quibus"},{"label":"acc pl. m.","answer":"quōs"},{"label":"acc pl. f.","answer":"quās"},{"label":"acc pl. n.","answer":"quae"},{"label":"abl pl. m.","answer":"quibus"},{"label":"abl pl. f.","answer":"quibus"},{"label":"abl pl. n.","answer":"quibus"}]},{"id":"Pronouns::sōlus","sheet":"Pronouns","category":"pronoun","section":"irregular adjectives of a similar pattern","name":"sōlus — alone","prompts":[{"label":"nom sing. m.","answer":"sōlus"},{"label":"nom sing. f.","answer":"sōla"},{"label":"nom sing. n.","answer":"sōlum"},{"label":"gen sing. m.","answer":"sōlīus"},{"label":"gen sing. f.","answer":"sōlīus"},{"label":"gen sing. n.","answer":"sōlīus"},{"label":"dat sing. m.","answer":"sōlī"},{"label":"dat sing. f.","answer":"sōlī"},{"label":"dat sing. n.","answer":"sōlī"},{"label":"acc sing. m.","answer":"sōlum"},{"label":"acc sing. f.","answer":"sōlam"},{"label":"acc sing. n.","answer":"sōlum"},{"label":"abl sing. m.","answer":"sōlō"},{"label":"abl sing. f.","answer":"sōlā"},{"label":"abl sing. n.","answer":"sōlō"},{"label":"nom pl. m.","answer":"sōlī"},{"label":"nom pl. f.","answer":"sōlae"},{"label":"nom pl. n.","answer":"sōla"},{"label":"gen pl. m.","answer":"sōlōrum"},{"label":"gen pl. f.","answer":"sōlārum"},{"label":"gen pl. n.","answer":"sōlōrum"},{"label":"dat pl. m.","answer":"sōlīs"},{"label":"dat pl. f.","answer":"sōlīs"},{"label":"dat pl. n.","answer":"sōlīs"},{"label":"acc pl. m.","answer":"sōlōs"},{"label":"acc pl. f.","answer":"sōlās"},{"label":"acc pl. n.","answer":"sōla"},{"label":"abl pl. m.","answer":"sōlīs"},{"label":"abl pl. f.","answer":"sōlīs"},{"label":"abl pl. n.","answer":"sōlīs"}]},{"id":"Pronouns::tōtus","sheet":"Pronouns","category":"pronoun","section":"irregular adjectives of a similar pattern","name":"tōtus — whole","prompts":[{"label":"nom sing. m.","answer":"tōtus"},{"label":"nom sing. f.","answer":"tōta"},{"label":"nom sing. n.","answer":"tōtum"},{"label":"gen sing. m.","answer":"tōtīus"},{"label":"gen sing. f.","answer":"tōtīus"},{"label":"gen sing. n.","answer":"tōtīus"},{"label":"dat sing. m.","answer":"tōtī"},{"label":"dat sing. f.","answer":"tōtī"},{"label":"dat sing. n.","answer":"tōtī"},{"label":"acc sing. m.","answer":"tōtum"},{"label":"acc sing. f.","answer":"tōtam"},{"label":"acc sing. n.","answer":"tōtum"},{"label":"abl sing. m.","answer":"tōtō"},{"label":"abl sing. f.","answer":"tōtā"},{"label":"abl sing. n.","answer":"tōtō"},{"label":"nom pl. m.","answer":"tōtī"},{"label":"nom pl. f.","answer":"tōtae"},{"label":"nom pl. n.","answer":"tōta"},{"label":"gen pl. m.","answer":"tōtōrum"},{"label":"gen pl. f.","answer":"tōtārum"},{"label":"gen pl. n.","answer":"tōtōrum"},{"label":"dat pl. m.","answer":"tōtīs"},{"label":"dat pl. f.","answer":"tōtīs"},{"label":"dat pl. n.","answer":"tōtīs"},{"label":"acc pl. m.","answer":"tōtōs"},{"label":"acc pl. f.","answer":"tōtās"},{"label":"acc pl. n.","answer":"tōta"},{"label":"abl pl. m.","answer":"tōtīs"},{"label":"abl pl. f.","answer":"tōtīs"},{"label":"abl pl. n.","answer":"tōtīs"}]},{"id":"Pronouns::I","sheet":"Pronouns","category":"pronoun","section":"personal pronouns","name":"I (ego/egō)","prompts":[{"label":"nom sing.","answer":"ego/egō"},{"label":"gen sing.","answer":"meī"},{"label":"dat sing.","answer":"mihi/mihī/mī"},{"label":"acc sing.","answer":"mē"},{"label":"abl sing.","answer":"mē"}]},{"id":"Pronouns::we","sheet":"Pronouns","category":"pronoun","section":"personal pronouns","name":"we (nōs)","prompts":[{"label":"nom pl.","answer":"nōs"},{"label":"gen pl.","answer":"nostrum, nostrī"},{"label":"dat pl.","answer":"nōbīs"},{"label":"acc pl.","answer":"nōs"},{"label":"abl pl.","answer":"nōbīs"}]},{"id":"Pronouns::you sing.","sheet":"Pronouns","category":"pronoun","section":"personal pronouns","name":"you sing. (tū)","prompts":[{"label":"nom sing.","answer":"tū"},{"label":"gen sing.","answer":"tuī"},{"label":"dat sing.","answer":"tibi/tibī"},{"label":"acc sing.","answer":"tē"},{"label":"abl sing.","answer":"tē"}]},{"id":"Pronouns::you pl.","sheet":"Pronouns","category":"pronoun","section":"personal pronouns","name":"you pl. (vōs)","prompts":[{"label":"nom pl.","answer":"vōs"},{"label":"gen pl.","answer":"vestrum, vestrī"},{"label":"dat pl.","answer":"vōbīs"},{"label":"acc pl.","answer":"vōs"},{"label":"abl pl.","answer":"vōbīs"}]},{"id":"Pronouns::reflexive","sheet":"Pronouns","category":"pronoun","section":"personal pronouns","name":"reflexive (suī)","prompts":[{"label":"gen sing.","answer":"suī"},{"label":"dat sing.","answer":"sibi/sibī"},{"label":"acc sing.","answer":"sē/sēsē"},{"label":"abl sing.","answer":"sē/sēsē"},{"label":"gen pl.","answer":"suī"},{"label":"dat pl.","answer":"sibi/sibī"},{"label":"acc pl.","answer":"sē/sēsē"},{"label":"abl pl.","answer":"sē/sēsē"}]},{"id":"Comparison::COMPARISON OF ADJECTIVES","sheet":"Comparison","category":"comparison","name":"Comparison of Adjectives","prompts":[{"label":"comparative of longus","answer":"longior"},{"label":"superlative of longus","answer":"longissimus"},{"label":"comparative of fortis","answer":"fortior"},{"label":"superlative of fortis","answer":"fortissimus"},{"label":"comparative of fēlīx","answer":"fēlīcior"},{"label":"superlative of fēlīx","answer":"fēlīcissimus"},{"label":"comparative of sapiēns","answer":"sapientior"},{"label":"superlative of sapiēns","answer":"sapientissimus"},{"label":"comparative of facilis","answer":"facilior"},{"label":"superlative of facilis","answer":"facillimus"},{"label":"comparative of līber","answer":"līberior"},{"label":"superlative of līber","answer":"līberrimus"},{"label":"comparative of pulcher","answer":"pulchrior"},{"label":"superlative of pulcher","answer":"pulcherrimus"},{"label":"comparative of ācer","answer":"ācrior"},{"label":"superlative of ācer","answer":"ācerrimus"},{"label":"comparative of bonus","answer":"melior"},{"label":"superlative of bonus","answer":"optimus"},{"label":"comparative of magnus","answer":"major"},{"label":"superlative of magnus","answer":"māximus"},{"label":"comparative of malus","answer":"pejor"},{"label":"superlative of malus","answer":"pessimus"},{"label":"comparative of multus","answer":"plūs"},{"label":"superlative of multus","answer":"plūrimus"},{"label":"comparative of parvus","answer":"minor"},{"label":"superlative of parvus","answer":"minimus"},{"label":"comparative of superus","answer":"superior"},{"label":"superlative of superus","answer":"summus (suprēmus)"},{"label":"comparative of (prae, prō)","answer":"prior"},{"label":"superlative of (prae, prō)","answer":"prīmus"}]},{"id":"Comparison::COMPARISON OF ADVERBS","sheet":"Comparison","category":"comparison","name":"Comparison of Adverbs","prompts":[{"label":"comparative of longē","answer":"longius"},{"label":"superlative of longē","answer":"longissimē"},{"label":"comparative of fortiter","answer":"fortius"},{"label":"superlative of fortiter","answer":"fortissimē"},{"label":"comparative of fēlīciter","answer":"fēlīcius"},{"label":"superlative of fēlīciter","answer":"fēlīcissimē"},{"label":"comparative of sapiēnter","answer":"sapientius"},{"label":"superlative of sapiēnter","answer":"sapientissimē"},{"label":"comparative of facile","answer":"facilius"},{"label":"superlative of facile","answer":"facillimē"},{"label":"comparative of līberē","answer":"līberius"},{"label":"superlative of līberē","answer":"līberrimē"},{"label":"comparative of pulchrē","answer":"pulchrius"},{"label":"superlative of pulchrē","answer":"pulcherrimē"},{"label":"comparative of ācriter","answer":"ācrius"},{"label":"superlative of ācriter","answer":"ācerrimē"},{"label":"comparative of bene","answer":"melius"},{"label":"superlative of bene","answer":"optimē"},{"label":"comparative of magnopere","answer":"magis"},{"label":"superlative of magnopere","answer":"māximē"},{"label":"comparative of male","answer":"pejus"},{"label":"superlative of male","answer":"pessimē"},{"label":"comparative of multum","answer":"plūs"},{"label":"superlative of multum","answer":"plūrimum"},{"label":"comparative of parum","answer":"minus"},{"label":"superlative of parum","answer":"minimē"},{"label":"comparative of diū","answer":"diūtius"},{"label":"superlative of diū","answer":"diūtissimē"},{"label":"comparative of (prae, prō)","answer":"prius"},{"label":"superlative of (prae, prō)","answer":"prīmum, prīmō"}]},{"id":"1st conj","sheet":"1st conj","category":"verb","name":"amō — love","principal_parts":"amō, amāre, amāvī, amātum","prompts":[{"label":"pres. ind. act. 1sg","answer":"amō"},{"label":"pres. ind. act. 2sg","answer":"amās"},{"label":"pres. ind. act. 3sg","answer":"amat"},{"label":"pres. ind. act. 1pl","answer":"amāmus"},{"label":"pres. ind. act. 2pl","answer":"amātis"},{"label":"pres. ind. act. 3pl","answer":"amant"},{"label":"imp. ind. act. 1sg","answer":"amābam"},{"label":"imp. ind. act. 2sg","answer":"amābās"},{"label":"imp. ind. act. 3sg","answer":"amābat"},{"label":"imp. ind. act. 1pl","answer":"amābāmus"},{"label":"imp. ind. act. 2pl","answer":"amābātis"},{"label":"imp. ind. act. 3pl","answer":"amābant"},{"label":"fut. ind. act. 1sg","answer":"amābō"},{"label":"fut. ind. act. 2sg","answer":"amābis"},{"label":"fut. ind. act. 3sg","answer":"amābit"},{"label":"fut. ind. act. 1pl","answer":"amābimus"},{"label":"fut. ind. act. 2pl","answer":"amābitis"},{"label":"fut. ind. act. 3pl","answer":"amābunt"},{"label":"perf. ind. act. 1sg","answer":"amāvī"},{"label":"perf. ind. act. 2sg","answer":"amāvistī, amāstī"},{"label":"perf. ind. act. 3sg","answer":"amāvit"},{"label":"perf. ind. act. 1pl","answer":"amāvimus"},{"label":"perf. ind. act. 2pl","answer":"amāvistis, amāstis"},{"label":"perf. ind. act. 3pl","answer":"amāvērunt, amāvēre"},{"label":"plup. ind. act. 1sg","answer":"amāveram"},{"label":"plup. ind. act. 2sg","answer":"amāverās"},{"label":"plup. ind. act. 3sg","answer":"amāverat"},{"label":"plup. ind. act. 1pl","answer":"amāverāmus"},{"label":"plup. ind. act. 2pl","answer":"amāverātis"},{"label":"plup. ind. act. 3pl","answer":"amāverant"},{"label":"fut.perf. ind. act. 1sg","answer":"amāverō"},{"label":"fut.perf. ind. act. 2sg","answer":"amāveris"},{"label":"fut.perf. ind. act. 3sg","answer":"amāverit"},{"label":"fut.perf. ind. act. 1pl","answer":"amāverimus"},{"label":"fut.perf. ind. act. 2pl","answer":"amāveritis"},{"label":"fut.perf. ind. act. 3pl","answer":"amāverint"},{"label":"pres. ind. pass. 1sg","answer":"amor"},{"label":"pres. ind. pass. 2sg","answer":"amāris, amāre"},{"label":"pres. ind. pass. 3sg","answer":"amātur"},{"label":"pres. ind. pass. 1pl","answer":"amāmur"},{"label":"pres. ind. pass. 2pl","answer":"amāminī"},{"label":"pres. ind. pass. 3pl","answer":"amantur"},{"label":"imp. ind. pass. 1sg","answer":"amābar"},{"label":"imp. ind. pass. 2sg","answer":"amābāris, amābāre"},{"label":"imp. ind. pass. 3sg","answer":"amābātur"},{"label":"imp. ind. pass. 1pl","answer":"amābāmur"},{"label":"imp. ind. pass. 2pl","answer":"amābāminī"},{"label":"imp. ind. pass. 3pl","answer":"amābantur"},{"label":"fut. ind. pass. 1sg","answer":"amābor"},{"label":"fut. ind. pass. 2sg","answer":"amāberis, amābere"},{"label":"fut. ind. pass. 3sg","answer":"amābitur"},{"label":"fut. ind. pass. 1pl","answer":"amābimur"},{"label":"fut. ind. pass. 2pl","answer":"amābiminī"},{"label":"fut. ind. pass. 3pl","answer":"amābuntur"},{"label":"pres. subj. act. 1sg","answer":"amem"},{"label":"pres. subj. act. 2sg","answer":"amēs"},{"label":"pres. subj. act. 3sg","answer":"amet"},{"label":"pres. subj. act. 1pl","answer":"amēmus"},{"label":"pres. subj. act. 2pl","answer":"amētis"},{"label":"pres. subj. act. 3pl","answer":"ament"},{"label":"imp. subj. act. 1sg","answer":"amārem"},{"label":"imp. subj. act. 2sg","answer":"amārēs"},{"label":"imp. subj. act. 3sg","answer":"amāret"},{"label":"imp. subj. act. 1pl","answer":"amārēmus"},{"label":"imp. subj. act. 2pl","answer":"amārētis"},{"label":"imp. subj. act. 3pl","answer":"amārent"},{"label":"perf. subj. act. 1sg","answer":"amāverim"},{"label":"perf. subj. act. 2sg","answer":"amāverīs"},{"label":"perf. subj. act. 3sg","answer":"amāverit"},{"label":"perf. subj. act. 1pl","answer":"amāverīmus"},{"label":"perf. subj. act. 2pl","answer":"amāverītis"},{"label":"perf. subj. act. 3pl","answer":"amāverint"},{"label":"plup. subj. act. 1sg","answer":"amāvissem, amāssem"},{"label":"plup. subj. act. 2sg","answer":"amāvissēs, amāssēs"},{"label":"plup. subj. act. 3sg","answer":"amāvisset, amāsset"},{"label":"plup. subj. act. 1pl","answer":"amāvissēmus, amāssēmus"},{"label":"plup. subj. act. 2pl","answer":"amāvissētis, amāssētis"},{"label":"plup. subj. act. 3pl","answer":"amāvissent, amāssent"},{"label":"pres. subj. pass. 1sg","answer":"amer"},{"label":"pres. subj. pass. 2sg","answer":"amēris, amēre"},{"label":"pres. subj. pass. 3sg","answer":"amētur"},{"label":"pres. subj. pass. 1pl","answer":"amēmur"},{"label":"pres. subj. pass. 2pl","answer":"amēminī"},{"label":"pres. subj. pass. 3pl","answer":"amentur"},{"label":"imp. subj. pass. 1sg","answer":"amārer"},{"label":"imp. subj. pass. 2sg","answer":"amārēris, amārēre"},{"label":"imp. subj. pass. 3sg","answer":"amārētur"},{"label":"imp. subj. pass. 1pl","answer":"amārēmur"},{"label":"imp. subj. pass. 2pl","answer":"amārēminī"},{"label":"imp. subj. pass. 3pl","answer":"amārentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"amā"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"amāte"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"amātō"},{"label":"fut. imper. act. 3sg","answer":"amātō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"amātōte"},{"label":"fut. imper. act. 3pl","answer":"amantō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"amāre"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"amāminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"amātor"},{"label":"fut. imper. pass. 3sg","answer":"amātor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"amantor"}]},{"id":"2nd conj","sheet":"2nd conj","category":"verb","name":"moneō — advise","principal_parts":"moneō, monēre, monuī, monitum","prompts":[{"label":"pres. ind. act. 1sg","answer":"moneō"},{"label":"pres. ind. act. 2sg","answer":"monēs"},{"label":"pres. ind. act. 3sg","answer":"monet"},{"label":"pres. ind. act. 1pl","answer":"monēmus"},{"label":"pres. ind. act. 2pl","answer":"monētis"},{"label":"pres. ind. act. 3pl","answer":"monent"},{"label":"imp. ind. act. 1sg","answer":"monēbam"},{"label":"imp. ind. act. 2sg","answer":"monēbās"},{"label":"imp. ind. act. 3sg","answer":"monēbat"},{"label":"imp. ind. act. 1pl","answer":"monēbāmus"},{"label":"imp. ind. act. 2pl","answer":"monēbātis"},{"label":"imp. ind. act. 3pl","answer":"monēbant"},{"label":"fut. ind. act. 1sg","answer":"monēbō"},{"label":"fut. ind. act. 2sg","answer":"monēbis"},{"label":"fut. ind. act. 3sg","answer":"monēbit"},{"label":"fut. ind. act. 1pl","answer":"monēbimus"},{"label":"fut. ind. act. 2pl","answer":"monēbitis"},{"label":"fut. ind. act. 3pl","answer":"monēbunt"},{"label":"perf. ind. act. 1sg","answer":"monuī"},{"label":"perf. ind. act. 2sg","answer":"monuistī"},{"label":"perf. ind. act. 3sg","answer":"monuit"},{"label":"perf. ind. act. 1pl","answer":"monuimus"},{"label":"perf. ind. act. 2pl","answer":"monuistis"},{"label":"perf. ind. act. 3pl","answer":"monuērunt, monuēre"},{"label":"plup. ind. act. 1sg","answer":"monueram"},{"label":"plup. ind. act. 2sg","answer":"monuerās"},{"label":"plup. ind. act. 3sg","answer":"monuerat"},{"label":"plup. ind. act. 1pl","answer":"monuerāmus"},{"label":"plup. ind. act. 2pl","answer":"monuerātis"},{"label":"plup. ind. act. 3pl","answer":"monuerant"},{"label":"fut.perf. ind. act. 1sg","answer":"monuerō"},{"label":"fut.perf. ind. act. 2sg","answer":"monueris"},{"label":"fut.perf. ind. act. 3sg","answer":"monuerit"},{"label":"fut.perf. ind. act. 1pl","answer":"monuerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"monueritis"},{"label":"fut.perf. ind. act. 3pl","answer":"monuerint"},{"label":"pres. ind. pass. 1sg","answer":"moneor"},{"label":"pres. ind. pass. 2sg","answer":"monēris, monēre"},{"label":"pres. ind. pass. 3sg","answer":"monētur"},{"label":"pres. ind. pass. 1pl","answer":"monēmur"},{"label":"pres. ind. pass. 2pl","answer":"monēminī"},{"label":"pres. ind. pass. 3pl","answer":"monentur"},{"label":"imp. ind. pass. 1sg","answer":"monēbar"},{"label":"imp. ind. pass. 2sg","answer":"monēbāris, monēbāre"},{"label":"imp. ind. pass. 3sg","answer":"monēbātur"},{"label":"imp. ind. pass. 1pl","answer":"monēbāmur"},{"label":"imp. ind. pass. 2pl","answer":"monēbāminī"},{"label":"imp. ind. pass. 3pl","answer":"monēbantur"},{"label":"fut. ind. pass. 1sg","answer":"monēbor"},{"label":"fut. ind. pass. 2sg","answer":"monēberis, monēbere"},{"label":"fut. ind. pass. 3sg","answer":"monēbitur"},{"label":"fut. ind. pass. 1pl","answer":"monēbimur"},{"label":"fut. ind. pass. 2pl","answer":"monēbiminī"},{"label":"fut. ind. pass. 3pl","answer":"monēbuntur"},{"label":"pres. subj. act. 1sg","answer":"moneam"},{"label":"pres. subj. act. 2sg","answer":"moneās"},{"label":"pres. subj. act. 3sg","answer":"moneat"},{"label":"pres. subj. act. 1pl","answer":"moneāmus"},{"label":"pres. subj. act. 2pl","answer":"moneātis"},{"label":"pres. subj. act. 3pl","answer":"moneant"},{"label":"imp. subj. act. 1sg","answer":"monērem"},{"label":"imp. subj. act. 2sg","answer":"monērēs"},{"label":"imp. subj. act. 3sg","answer":"monēret"},{"label":"imp. subj. act. 1pl","answer":"monērēmus"},{"label":"imp. subj. act. 2pl","answer":"monērētis"},{"label":"imp. subj. act. 3pl","answer":"monērent"},{"label":"perf. subj. act. 1sg","answer":"monuerim"},{"label":"perf. subj. act. 2sg","answer":"monuerīs"},{"label":"perf. subj. act. 3sg","answer":"monuerit"},{"label":"perf. subj. act. 1pl","answer":"monuerīmus"},{"label":"perf. subj. act. 2pl","answer":"monuerītis"},{"label":"perf. subj. act. 3pl","answer":"monuerint"},{"label":"plup. subj. act. 1sg","answer":"monuissem"},{"label":"plup. subj. act. 2sg","answer":"monuissēs"},{"label":"plup. subj. act. 3sg","answer":"monuisset"},{"label":"plup. subj. act. 1pl","answer":"monuissēmus"},{"label":"plup. subj. act. 2pl","answer":"monuissētis"},{"label":"plup. subj. act. 3pl","answer":"monuissent"},{"label":"pres. subj. pass. 1sg","answer":"monear"},{"label":"pres. subj. pass. 2sg","answer":"moneāris, moneāre"},{"label":"pres. subj. pass. 3sg","answer":"moneātur"},{"label":"pres. subj. pass. 1pl","answer":"moneāmur"},{"label":"pres. subj. pass. 2pl","answer":"moneāminī"},{"label":"pres. subj. pass. 3pl","answer":"moneantur"},{"label":"imp. subj. pass. 1sg","answer":"monērer"},{"label":"imp. subj. pass. 2sg","answer":"monērēris, monērēre"},{"label":"imp. subj. pass. 3sg","answer":"monērētur"},{"label":"imp. subj. pass. 1pl","answer":"monērēmur"},{"label":"imp. subj. pass. 2pl","answer":"monērēminī"},{"label":"imp. subj. pass. 3pl","answer":"monērentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"monē"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"monēte"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"monētō"},{"label":"fut. imper. act. 3sg","answer":"monētō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"monētōte"},{"label":"fut. imper. act. 3pl","answer":"monentō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"monēre"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"monēminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"monētor"},{"label":"fut. imper. pass. 3sg","answer":"monētor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"monentor"}]},{"id":"3rd conj","sheet":"3rd conj","category":"verb","name":"agō — drive, do","principal_parts":"agō, agere, ēgī, āctum","prompts":[{"label":"pres. ind. act. 1sg","answer":"agō"},{"label":"pres. ind. act. 2sg","answer":"agis"},{"label":"pres. ind. act. 3sg","answer":"agit"},{"label":"pres. ind. act. 1pl","answer":"agimus"},{"label":"pres. ind. act. 2pl","answer":"agitis"},{"label":"pres. ind. act. 3pl","answer":"agunt"},{"label":"imp. ind. act. 1sg","answer":"agēbam"},{"label":"imp. ind. act. 2sg","answer":"agēbās"},{"label":"imp. ind. act. 3sg","answer":"agēbat"},{"label":"imp. ind. act. 1pl","answer":"agēbāmus"},{"label":"imp. ind. act. 2pl","answer":"agēbātis"},{"label":"imp. ind. act. 3pl","answer":"agēbant"},{"label":"fut. ind. act. 1sg","answer":"agam"},{"label":"fut. ind. act. 2sg","answer":"agēs"},{"label":"fut. ind. act. 3sg","answer":"aget"},{"label":"fut. ind. act. 1pl","answer":"agēmus"},{"label":"fut. ind. act. 2pl","answer":"agētis"},{"label":"fut. ind. act. 3pl","answer":"agent"},{"label":"perf. ind. act. 1sg","answer":"ēgī"},{"label":"perf. ind. act. 2sg","answer":"ēgistī"},{"label":"perf. ind. act. 3sg","answer":"ēgit"},{"label":"perf. ind. act. 1pl","answer":"ēgimus"},{"label":"perf. ind. act. 2pl","answer":"ēgistis"},{"label":"perf. ind. act. 3pl","answer":"ēgērunt, ēgēre"},{"label":"plup. ind. act. 1sg","answer":"ēgeram"},{"label":"plup. ind. act. 2sg","answer":"ēgerās"},{"label":"plup. ind. act. 3sg","answer":"ēgerat"},{"label":"plup. ind. act. 1pl","answer":"ēgerāmus"},{"label":"plup. ind. act. 2pl","answer":"ēgerātis"},{"label":"plup. ind. act. 3pl","answer":"ēgerant"},{"label":"fut.perf. ind. act. 1sg","answer":"ēgerō"},{"label":"fut.perf. ind. act. 2sg","answer":"ēgeris"},{"label":"fut.perf. ind. act. 3sg","answer":"ēgerit"},{"label":"fut.perf. ind. act. 1pl","answer":"ēgerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"ēgeritis"},{"label":"fut.perf. ind. act. 3pl","answer":"ēgerint"},{"label":"pres. ind. pass. 1sg","answer":"agor"},{"label":"pres. ind. pass. 2sg","answer":"ageris, agere"},{"label":"pres. ind. pass. 3sg","answer":"agitur"},{"label":"pres. ind. pass. 1pl","answer":"agimur"},{"label":"pres. ind. pass. 2pl","answer":"agiminī"},{"label":"pres. ind. pass. 3pl","answer":"aguntur"},{"label":"imp. ind. pass. 1sg","answer":"agēbar"},{"label":"imp. ind. pass. 2sg","answer":"agēbāris, agēbāre"},{"label":"imp. ind. pass. 3sg","answer":"agēbātur"},{"label":"imp. ind. pass. 1pl","answer":"agēbāmur"},{"label":"imp. ind. pass. 2pl","answer":"agēbāminī"},{"label":"imp. ind. pass. 3pl","answer":"agēbantur"},{"label":"fut. ind. pass. 1sg","answer":"agar"},{"label":"fut. ind. pass. 2sg","answer":"agēris, agēre"},{"label":"fut. ind. pass. 3sg","answer":"agētur"},{"label":"fut. ind. pass. 1pl","answer":"agēmur"},{"label":"fut. ind. pass. 2pl","answer":"agēminī"},{"label":"fut. ind. pass. 3pl","answer":"agentur"},{"label":"pres. subj. act. 1sg","answer":"agam"},{"label":"pres. subj. act. 2sg","answer":"agās"},{"label":"pres. subj. act. 3sg","answer":"agat"},{"label":"pres. subj. act. 1pl","answer":"agāmus"},{"label":"pres. subj. act. 2pl","answer":"agātis"},{"label":"pres. subj. act. 3pl","answer":"agant"},{"label":"imp. subj. act. 1sg","answer":"agerem"},{"label":"imp. subj. act. 2sg","answer":"agerēs"},{"label":"imp. subj. act. 3sg","answer":"ageret"},{"label":"imp. subj. act. 1pl","answer":"agerēmus"},{"label":"imp. subj. act. 2pl","answer":"agerētis"},{"label":"imp. subj. act. 3pl","answer":"agerent"},{"label":"perf. subj. act. 1sg","answer":"ēgerim"},{"label":"perf. subj. act. 2sg","answer":"ēgerīs"},{"label":"perf. subj. act. 3sg","answer":"ēgerit"},{"label":"perf. subj. act. 1pl","answer":"ēgerīmus"},{"label":"perf. subj. act. 2pl","answer":"ēgerītis"},{"label":"perf. subj. act. 3pl","answer":"ēgerint"},{"label":"plup. subj. act. 1sg","answer":"ēgissem"},{"label":"plup. subj. act. 2sg","answer":"ēgissēs"},{"label":"plup. subj. act. 3sg","answer":"ēgisset"},{"label":"plup. subj. act. 1pl","answer":"ēgissēmus"},{"label":"plup. subj. act. 2pl","answer":"ēgissētis"},{"label":"plup. subj. act. 3pl","answer":"ēgissent"},{"label":"pres. subj. pass. 1sg","answer":"agar"},{"label":"pres. subj. pass. 2sg","answer":"agāris, agāre"},{"label":"pres. subj. pass. 3sg","answer":"agātur"},{"label":"pres. subj. pass. 1pl","answer":"agāmur"},{"label":"pres. subj. pass. 2pl","answer":"agāminī"},{"label":"pres. subj. pass. 3pl","answer":"agantur"},{"label":"imp. subj. pass. 1sg","answer":"agerer"},{"label":"imp. subj. pass. 2sg","answer":"agerēris, agerēre"},{"label":"imp. subj. pass. 3sg","answer":"agerētur"},{"label":"imp. subj. pass. 1pl","answer":"agerēmur"},{"label":"imp. subj. pass. 2pl","answer":"agerēminī"},{"label":"imp. subj. pass. 3pl","answer":"agerentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"age"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"agite"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"agitō"},{"label":"fut. imper. act. 3sg","answer":"agitō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"agitōte"},{"label":"fut. imper. act. 3pl","answer":"aguntō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"agere"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"agiminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"agitor"},{"label":"fut. imper. pass. 3sg","answer":"agitor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"aguntor"}]},{"id":"3rd conj i-stem","sheet":"3rd conj i-stem","category":"verb","name":"capiō — catch","principal_parts":"capiō, capere, cēpī, captum","prompts":[{"label":"pres. ind. act. 1sg","answer":"capiō"},{"label":"pres. ind. act. 2sg","answer":"capis"},{"label":"pres. ind. act. 3sg","answer":"capit"},{"label":"pres. ind. act. 1pl","answer":"capimus"},{"label":"pres. ind. act. 2pl","answer":"capitis"},{"label":"pres. ind. act. 3pl","answer":"capiunt"},{"label":"imp. ind. act. 1sg","answer":"capiēbam"},{"label":"imp. ind. act. 2sg","answer":"capiēbās"},{"label":"imp. ind. act. 3sg","answer":"capiēbat"},{"label":"imp. ind. act. 1pl","answer":"capiēbāmus"},{"label":"imp. ind. act. 2pl","answer":"capiēbātis"},{"label":"imp. ind. act. 3pl","answer":"capiēbant"},{"label":"fut. ind. act. 1sg","answer":"capiam"},{"label":"fut. ind. act. 2sg","answer":"capiēs"},{"label":"fut. ind. act. 3sg","answer":"capiet"},{"label":"fut. ind. act. 1pl","answer":"capiēmus"},{"label":"fut. ind. act. 2pl","answer":"capiētis"},{"label":"fut. ind. act. 3pl","answer":"capient"},{"label":"perf. ind. act. 1sg","answer":"cēpī"},{"label":"perf. ind. act. 2sg","answer":"cēpistī"},{"label":"perf. ind. act. 3sg","answer":"cēpit"},{"label":"perf. ind. act. 1pl","answer":"cēpimus"},{"label":"perf. ind. act. 2pl","answer":"cēpistis"},{"label":"perf. ind. act. 3pl","answer":"cēpērunt, cēpēre"},{"label":"plup. ind. act. 1sg","answer":"cēperam"},{"label":"plup. ind. act. 2sg","answer":"cēperās"},{"label":"plup. ind. act. 3sg","answer":"cēperat"},{"label":"plup. ind. act. 1pl","answer":"cēperāmus"},{"label":"plup. ind. act. 2pl","answer":"cēperātis"},{"label":"plup. ind. act. 3pl","answer":"cēperant"},{"label":"fut.perf. ind. act. 1sg","answer":"cēperō"},{"label":"fut.perf. ind. act. 2sg","answer":"cēperis"},{"label":"fut.perf. ind. act. 3sg","answer":"cēperit"},{"label":"fut.perf. ind. act. 1pl","answer":"cēperimus"},{"label":"fut.perf. ind. act. 2pl","answer":"cēperitis"},{"label":"fut.perf. ind. act. 3pl","answer":"cēperint"},{"label":"pres. ind. pass. 1sg","answer":"capior"},{"label":"pres. ind. pass. 2sg","answer":"caperis, capere"},{"label":"pres. ind. pass. 3sg","answer":"capitur"},{"label":"pres. ind. pass. 1pl","answer":"capimur"},{"label":"pres. ind. pass. 2pl","answer":"capiminī"},{"label":"pres. ind. pass. 3pl","answer":"capiuntur"},{"label":"imp. ind. pass. 1sg","answer":"capiēbar"},{"label":"imp. ind. pass. 2sg","answer":"capiēbāris, capiēbāre"},{"label":"imp. ind. pass. 3sg","answer":"capiēbātur"},{"label":"imp. ind. pass. 1pl","answer":"capiēbāmur"},{"label":"imp. ind. pass. 2pl","answer":"capiēbāminī"},{"label":"imp. ind. pass. 3pl","answer":"capiēbantur"},{"label":"fut. ind. pass. 1sg","answer":"capiar"},{"label":"fut. ind. pass. 2sg","answer":"capiēris, capiēre"},{"label":"fut. ind. pass. 3sg","answer":"capiētur"},{"label":"fut. ind. pass. 1pl","answer":"capiēmur"},{"label":"fut. ind. pass. 2pl","answer":"capiēminī"},{"label":"fut. ind. pass. 3pl","answer":"capientur"},{"label":"pres. subj. act. 1sg","answer":"capiam"},{"label":"pres. subj. act. 2sg","answer":"capiās"},{"label":"pres. subj. act. 3sg","answer":"capiat"},{"label":"pres. subj. act. 1pl","answer":"capiāmus"},{"label":"pres. subj. act. 2pl","answer":"capiātis"},{"label":"pres. subj. act. 3pl","answer":"capiant"},{"label":"imp. subj. act. 1sg","answer":"caperem"},{"label":"imp. subj. act. 2sg","answer":"caperēs"},{"label":"imp. subj. act. 3sg","answer":"caperet"},{"label":"imp. subj. act. 1pl","answer":"caperēmus"},{"label":"imp. subj. act. 2pl","answer":"caperētis"},{"label":"imp. subj. act. 3pl","answer":"caperent"},{"label":"perf. subj. act. 1sg","answer":"cēperim"},{"label":"perf. subj. act. 2sg","answer":"cēperīs"},{"label":"perf. subj. act. 3sg","answer":"cēperit"},{"label":"perf. subj. act. 1pl","answer":"cēperīmus"},{"label":"perf. subj. act. 2pl","answer":"cēperītis"},{"label":"perf. subj. act. 3pl","answer":"cēperint"},{"label":"plup. subj. act. 1sg","answer":"cēpissem"},{"label":"plup. subj. act. 2sg","answer":"cēpissēs"},{"label":"plup. subj. act. 3sg","answer":"cēpisset"},{"label":"plup. subj. act. 1pl","answer":"cēpissēmus"},{"label":"plup. subj. act. 2pl","answer":"cēpissētis"},{"label":"plup. subj. act. 3pl","answer":"cēpissent"},{"label":"pres. subj. pass. 1sg","answer":"capiar"},{"label":"pres. subj. pass. 2sg","answer":"capiāris, capiāre"},{"label":"pres. subj. pass. 3sg","answer":"capiātur"},{"label":"pres. subj. pass. 1pl","answer":"capiāmur"},{"label":"pres. subj. pass. 2pl","answer":"capiāminī"},{"label":"pres. subj. pass. 3pl","answer":"capiantur"},{"label":"imp. subj. pass. 1sg","answer":"caperer"},{"label":"imp. subj. pass. 2sg","answer":"caperēris, caperēre"},{"label":"imp. subj. pass. 3sg","answer":"caperētur"},{"label":"imp. subj. pass. 1pl","answer":"caperēmur"},{"label":"imp. subj. pass. 2pl","answer":"caperēminī"},{"label":"imp. subj. pass. 3pl","answer":"caperentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"cape"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"capite"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"capitō"},{"label":"fut. imper. act. 3sg","answer":"capitō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"capitōte"},{"label":"fut. imper. act. 3pl","answer":"capiuntō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"capere"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"capiminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"capitor"},{"label":"fut. imper. pass. 3sg","answer":"capitor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"capiuntor"}]},{"id":"4th conj","sheet":"4th conj","category":"verb","name":"audiō — hear","principal_parts":"audiō, audīre, audīvī, audītum","prompts":[{"label":"pres. ind. act. 1sg","answer":"audiō"},{"label":"pres. ind. act. 2sg","answer":"audīs"},{"label":"pres. ind. act. 3sg","answer":"audit"},{"label":"pres. ind. act. 1pl","answer":"audīmus"},{"label":"pres. ind. act. 2pl","answer":"audītis"},{"label":"pres. ind. act. 3pl","answer":"audiunt"},{"label":"imp. ind. act. 1sg","answer":"audiēbam"},{"label":"imp. ind. act. 2sg","answer":"audiēbās"},{"label":"imp. ind. act. 3sg","answer":"audiēbat"},{"label":"imp. ind. act. 1pl","answer":"audiēbāmus"},{"label":"imp. ind. act. 2pl","answer":"audiēbātis"},{"label":"imp. ind. act. 3pl","answer":"audiēbant"},{"label":"fut. ind. act. 1sg","answer":"audiam"},{"label":"fut. ind. act. 2sg","answer":"audiēs"},{"label":"fut. ind. act. 3sg","answer":"audiet"},{"label":"fut. ind. act. 1pl","answer":"audiēmus"},{"label":"fut. ind. act. 2pl","answer":"audiētis"},{"label":"fut. ind. act. 3pl","answer":"audient"},{"label":"perf. ind. act. 1sg","answer":"audīvī, audiī"},{"label":"perf. ind. act. 2sg","answer":"audīvistī, audiistī"},{"label":"perf. ind. act. 3sg","answer":"audīvit, audiit"},{"label":"perf. ind. act. 1pl","answer":"audīvimus, audiimus"},{"label":"perf. ind. act. 2pl","answer":"audīvistis, audiistis"},{"label":"perf. ind. act. 3pl","answer":"audīvērunt, audīvēre, audiērunt, audiēre"},{"label":"plup. ind. act. 1sg","answer":"audīveram, audieram"},{"label":"plup. ind. act. 2sg","answer":"audīverās, audierās"},{"label":"plup. ind. act. 3sg","answer":"audīverat, audierat"},{"label":"plup. ind. act. 1pl","answer":"audīverāmus, audierāmus"},{"label":"plup. ind. act. 2pl","answer":"audīverātis, audierātis"},{"label":"plup. ind. act. 3pl","answer":"audīverant, audierant"},{"label":"fut.perf. ind. act. 1sg","answer":"audīverō, audierō"},{"label":"fut.perf. ind. act. 2sg","answer":"audīveris, audieris"},{"label":"fut.perf. ind. act. 3sg","answer":"audīverit, audierit"},{"label":"fut.perf. ind. act. 1pl","answer":"audīverimus, audierimus"},{"label":"fut.perf. ind. act. 2pl","answer":"audīveritis, audieritis"},{"label":"fut.perf. ind. act. 3pl","answer":"audīverint, audierint"},{"label":"pres. ind. pass. 1sg","answer":"audior"},{"label":"pres. ind. pass. 2sg","answer":"audīris, audīre"},{"label":"pres. ind. pass. 3sg","answer":"audītur"},{"label":"pres. ind. pass. 1pl","answer":"audīmur"},{"label":"pres. ind. pass. 2pl","answer":"audīminī"},{"label":"pres. ind. pass. 3pl","answer":"audiuntur"},{"label":"imp. ind. pass. 1sg","answer":"audiēbar"},{"label":"imp. ind. pass. 2sg","answer":"audiēbāris, audiēbāre"},{"label":"imp. ind. pass. 3sg","answer":"audiēbātur"},{"label":"imp. ind. pass. 1pl","answer":"audiēbāmur"},{"label":"imp. ind. pass. 2pl","answer":"audiēbāminī"},{"label":"imp. ind. pass. 3pl","answer":"audiēbantur"},{"label":"fut. ind. pass. 1sg","answer":"audiar"},{"label":"fut. ind. pass. 2sg","answer":"audiēris, audiēre"},{"label":"fut. ind. pass. 3sg","answer":"audiētur"},{"label":"fut. ind. pass. 1pl","answer":"audiēmur"},{"label":"fut. ind. pass. 2pl","answer":"audiēminī"},{"label":"fut. ind. pass. 3pl","answer":"audientur"},{"label":"pres. subj. act. 1sg","answer":"audiam"},{"label":"pres. subj. act. 2sg","answer":"audiās"},{"label":"pres. subj. act. 3sg","answer":"audiat"},{"label":"pres. subj. act. 1pl","answer":"audiāmus"},{"label":"pres. subj. act. 2pl","answer":"audiātis"},{"label":"pres. subj. act. 3pl","answer":"audiant"},{"label":"imp. subj. act. 1sg","answer":"audīrem"},{"label":"imp. subj. act. 2sg","answer":"audīrēs"},{"label":"imp. subj. act. 3sg","answer":"audīret"},{"label":"imp. subj. act. 1pl","answer":"audīrēmus"},{"label":"imp. subj. act. 2pl","answer":"audīrētis"},{"label":"imp. subj. act. 3pl","answer":"audīrent"},{"label":"perf. subj. act. 1sg","answer":"audīverim, audierim"},{"label":"perf. subj. act. 2sg","answer":"audīverīs, audierīs"},{"label":"perf. subj. act. 3sg","answer":"audīverit, audierit"},{"label":"perf. subj. act. 1pl","answer":"audīverīmus, audierīmus"},{"label":"perf. subj. act. 2pl","answer":"audīverītis, audierītis"},{"label":"perf. subj. act. 3pl","answer":"audīverint, audierint"},{"label":"plup. subj. act. 1sg","answer":"audīvissem, audiissem"},{"label":"plup. subj. act. 2sg","answer":"audīvissēs, audiissēs"},{"label":"plup. subj. act. 3sg","answer":"audīvisset, audiisset"},{"label":"plup. subj. act. 1pl","answer":"audīvissēmus, audiissēmus"},{"label":"plup. subj. act. 2pl","answer":"audīvissētis, audiissētis"},{"label":"plup. subj. act. 3pl","answer":"audīvissent, audiissent"},{"label":"pres. subj. pass. 1sg","answer":"audiar"},{"label":"pres. subj. pass. 2sg","answer":"audiāris, audiāre"},{"label":"pres. subj. pass. 3sg","answer":"audiātur"},{"label":"pres. subj. pass. 1pl","answer":"audiāmur"},{"label":"pres. subj. pass. 2pl","answer":"audiāminī"},{"label":"pres. subj. pass. 3pl","answer":"audiantur"},{"label":"imp. subj. pass. 1sg","answer":"audīrer"},{"label":"imp. subj. pass. 2sg","answer":"audīrēris, audīrēre"},{"label":"imp. subj. pass. 3sg","answer":"audīrētur"},{"label":"imp. subj. pass. 1pl","answer":"audīrēmur"},{"label":"imp. subj. pass. 2pl","answer":"audīrēminī"},{"label":"imp. subj. pass. 3pl","answer":"audīrentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"audī"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"audīte"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"audītō"},{"label":"fut. imper. act. 3sg","answer":"audītō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"audītōte"},{"label":"fut. imper. act. 3pl","answer":"audiuntō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"audīre"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"audīminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"audītor"},{"label":"fut. imper. pass. 3sg","answer":"audītor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"audiuntor"}]},{"id":"sum","sheet":"sum","category":"verb","name":"sum — am","principal_parts":"sum, esse, fuī, futūrum","prompts":[{"label":"pres. ind. act. 2sg","answer":"es"},{"label":"pres. ind. act. 3sg","answer":"est"},{"label":"pres. ind. act. 2pl","answer":"estis"},{"label":"pres. ind. act. 3pl","answer":"sunt"},{"label":"imp. ind. act. 1sg","answer":"eram"},{"label":"imp. ind. act. 2sg","answer":"erās"},{"label":"imp. ind. act. 3sg","answer":"erat"},{"label":"imp. ind. act. 1pl","answer":"erāmus"},{"label":"imp. ind. act. 2pl","answer":"erātis"},{"label":"imp. ind. act. 3pl","answer":"erant"},{"label":"fut. ind. act. 1sg","answer":"erō"},{"label":"fut. ind. act. 2sg","answer":"eris, ere"},{"label":"fut. ind. act. 3sg","answer":"erit"},{"label":"fut. ind. act. 1pl","answer":"erimus"},{"label":"fut. ind. act. 2pl","answer":"eritis"},{"label":"fut. ind. act. 3pl","answer":"erunt"},{"label":"perf. ind. act. 1sg","answer":"fuī"},{"label":"perf. ind. act. 2sg","answer":"fuistī"},{"label":"perf. ind. act. 3sg","answer":"fuit"},{"label":"perf. ind. act. 1pl","answer":"fuimus"},{"label":"perf. ind. act. 2pl","answer":"fuistis"},{"label":"perf. ind. act. 3pl","answer":"fuērunt, fuēre"},{"label":"plup. ind. act. 1sg","answer":"fueram"},{"label":"plup. ind. act. 2sg","answer":"fuerās"},{"label":"plup. ind. act. 3sg","answer":"fuerat"},{"label":"plup. ind. act. 1pl","answer":"fuerāmus"},{"label":"plup. ind. act. 2pl","answer":"fuerātis"},{"label":"plup. ind. act. 3pl","answer":"fuerant"},{"label":"fut.perf. ind. act. 1sg","answer":"fuerō"},{"label":"fut.perf. ind. act. 2sg","answer":"fueris"},{"label":"fut.perf. ind. act. 3sg","answer":"fuerit"},{"label":"fut.perf. ind. act. 1pl","answer":"fuerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"fueritis"},{"label":"fut.perf. ind. act. 3pl","answer":"fuerint"},{"label":"pres. subj. act. 1sg","answer":"sim"},{"label":"pres. subj. act. 2sg","answer":"sīs"},{"label":"pres. subj. act. 3sg","answer":"sit"},{"label":"pres. subj. act. 1pl","answer":"sīmus"},{"label":"pres. subj. act. 2pl","answer":"sītis"},{"label":"pres. subj. act. 3pl","answer":"sint"},{"label":"imp. subj. act. 2sg","answer":"essēs, forēs"},{"label":"imp. subj. act. 1pl","answer":"essēmus, forēmus"},{"label":"imp. subj. act. 2pl","answer":"essētis, forētis"},{"label":"perf. subj. act. 1sg","answer":"fuerim"},{"label":"perf. subj. act. 2sg","answer":"fuerīs"},{"label":"perf. subj. act. 3sg","answer":"fuerit"},{"label":"perf. subj. act. 1pl","answer":"fuerīmus"},{"label":"perf. subj. act. 2pl","answer":"fuerītis"},{"label":"perf. subj. act. 3pl","answer":"fuerint"},{"label":"plup. subj. act. 1sg","answer":"fuissem"},{"label":"plup. subj. act. 2sg","answer":"fuissēs"},{"label":"plup. subj. act. 3sg","answer":"fuisset"},{"label":"plup. subj. act. 1pl","answer":"fuissēmus"},{"label":"plup. subj. act. 2pl","answer":"fuissētis"},{"label":"plup. subj. act. 3pl","answer":"fuissent"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"es"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"este"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"estō"},{"label":"fut. imper. act. 3sg","answer":"estō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"estōte"},{"label":"fut. imper. act. 3pl","answer":"suntō"}]},{"id":"possum","sheet":"possum","category":"verb","name":"possum — can","principal_parts":"possum, posse, potuī","prompts":[{"label":"pres. ind. act. 2sg","answer":"potes"},{"label":"pres. ind. act. 3sg","answer":"potest"},{"label":"pres. ind. act. 2pl","answer":"potestis"},{"label":"pres. ind. act. 3pl","answer":"possunt"},{"label":"imp. ind. act. 1sg","answer":"poteram"},{"label":"imp. ind. act. 2sg","answer":"poterās"},{"label":"imp. ind. act. 3sg","answer":"poterat"},{"label":"imp. ind. act. 1pl","answer":"poterāmus"},{"label":"imp. ind. act. 2pl","answer":"poterātis"},{"label":"imp. ind. act. 3pl","answer":"poterant"},{"label":"fut. ind. act. 1sg","answer":"poterō"},{"label":"fut. ind. act. 2sg","answer":"poteris, potere"},{"label":"fut. ind. act. 3sg","answer":"poterit"},{"label":"fut. ind. act. 1pl","answer":"poterimus"},{"label":"fut. ind. act. 2pl","answer":"poteritis"},{"label":"fut. ind. act. 3pl","answer":"poterunt"},{"label":"perf. ind. act. 1sg","answer":"potuī"},{"label":"perf. ind. act. 2sg","answer":"potuistī"},{"label":"perf. ind. act. 3sg","answer":"potuit"},{"label":"perf. ind. act. 1pl","answer":"potuimus"},{"label":"perf. ind. act. 2pl","answer":"potuistis"},{"label":"perf. ind. act. 3pl","answer":"potuērunt, potuēre"},{"label":"plup. ind. act. 1sg","answer":"potueram"},{"label":"plup. ind. act. 2sg","answer":"potuerās"},{"label":"plup. ind. act. 3sg","answer":"potuerat"},{"label":"plup. ind. act. 1pl","answer":"potuerāmus"},{"label":"plup. ind. act. 2pl","answer":"potuerātis"},{"label":"plup. ind. act. 3pl","answer":"potuerant"},{"label":"fut.perf. ind. act. 1sg","answer":"potuerō"},{"label":"fut.perf. ind. act. 2sg","answer":"potueris"},{"label":"fut.perf. ind. act. 3sg","answer":"potuerit"},{"label":"fut.perf. ind. act. 1pl","answer":"potuerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"potueritis"},{"label":"fut.perf. ind. act. 3pl","answer":"potuerint"},{"label":"pres. subj. act. 1sg","answer":"possim"},{"label":"pres. subj. act. 2sg","answer":"possīs"},{"label":"pres. subj. act. 3sg","answer":"possit"},{"label":"pres. subj. act. 1pl","answer":"possīmus"},{"label":"pres. subj. act. 2pl","answer":"possītis"},{"label":"pres. subj. act. 3pl","answer":"possint"},{"label":"imp. subj. act. 1sg","answer":"possem"},{"label":"imp. subj. act. 2sg","answer":"possēs"},{"label":"imp. subj. act. 3sg","answer":"posset"},{"label":"imp. subj. act. 1pl","answer":"possēmus"},{"label":"imp. subj. act. 2pl","answer":"possētis"},{"label":"imp. subj. act. 3pl","answer":"possent"},{"label":"perf. subj. act. 1sg","answer":"potuerim"},{"label":"perf. subj. act. 2sg","answer":"potuerīs"},{"label":"perf. subj. act. 3sg","answer":"potuerit"},{"label":"perf. subj. act. 1pl","answer":"potuerīmus"},{"label":"perf. subj. act. 2pl","answer":"potuerītis"},{"label":"perf. subj. act. 3pl","answer":"potuerint"},{"label":"plup. subj. act. 1sg","answer":"potuissem"},{"label":"plup. subj. act. 2sg","answer":"potuissēs"},{"label":"plup. subj. act. 3sg","answer":"potuisset"},{"label":"plup. subj. act. 1pl","answer":"potuissēmus"},{"label":"plup. subj. act. 2pl","answer":"potuissētis"},{"label":"plup. subj. act. 3pl","answer":"potuissent"}]},{"id":"volō","sheet":"volō","category":"verb","name":"volō — want","principal_parts":"volō, velle, voluī","prompts":[{"label":"pres. ind. act. 1sg","answer":"volō"},{"label":"pres. ind. act. 2sg","answer":"vīs"},{"label":"pres. ind. act. 3sg","answer":"vult, volt"},{"label":"pres. ind. act. 1pl","answer":"volumus"},{"label":"pres. ind. act. 2pl","answer":"vultis, voltis"},{"label":"pres. ind. act. 3pl","answer":"volunt"},{"label":"imp. ind. act. 1sg","answer":"volēbam"},{"label":"imp. ind. act. 2sg","answer":"volēbās"},{"label":"imp. ind. act. 3sg","answer":"volēbat"},{"label":"imp. ind. act. 1pl","answer":"volēbāmus"},{"label":"imp. ind. act. 2pl","answer":"volēbātis"},{"label":"imp. ind. act. 3pl","answer":"volēbant"},{"label":"fut. ind. act. 1sg","answer":"volam"},{"label":"fut. ind. act. 2sg","answer":"volēs"},{"label":"fut. ind. act. 3sg","answer":"volet"},{"label":"fut. ind. act. 1pl","answer":"volēmus"},{"label":"fut. ind. act. 2pl","answer":"volētis"},{"label":"fut. ind. act. 3pl","answer":"volent"},{"label":"perf. ind. act. 1sg","answer":"voluī"},{"label":"perf. ind. act. 2sg","answer":"voluistī"},{"label":"perf. ind. act. 3sg","answer":"voluit"},{"label":"perf. ind. act. 1pl","answer":"voluimus"},{"label":"perf. ind. act. 2pl","answer":"voluistis"},{"label":"perf. ind. act. 3pl","answer":"voluērunt, voluēre"},{"label":"plup. ind. act. 1sg","answer":"volueram"},{"label":"plup. ind. act. 2sg","answer":"voluerās"},{"label":"plup. ind. act. 3sg","answer":"voluerat"},{"label":"plup. ind. act. 1pl","answer":"voluerāmus"},{"label":"plup. ind. act. 2pl","answer":"voluerātis"},{"label":"plup. ind. act. 3pl","answer":"voluerant"},{"label":"fut.perf. ind. act. 1sg","answer":"voluerō"},{"label":"fut.perf. ind. act. 2sg","answer":"volueris"},{"label":"fut.perf. ind. act. 3sg","answer":"voluerit"},{"label":"fut.perf. ind. act. 1pl","answer":"voluerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"volueritis"},{"label":"fut.perf. ind. act. 3pl","answer":"voluerint"},{"label":"pres. subj. act. 1sg","answer":"velim"},{"label":"pres. subj. act. 2sg","answer":"velīs"},{"label":"pres. subj. act. 3sg","answer":"velit"},{"label":"pres. subj. act. 1pl","answer":"velīmus"},{"label":"pres. subj. act. 2pl","answer":"velītis"},{"label":"pres. subj. act. 3pl","answer":"velint"},{"label":"imp. subj. act. 1sg","answer":"vellem"},{"label":"imp. subj. act. 2sg","answer":"vellēs"},{"label":"imp. subj. act. 3sg","answer":"vellet"},{"label":"imp. subj. act. 1pl","answer":"vellēmus"},{"label":"imp. subj. act. 2pl","answer":"vellētis"},{"label":"imp. subj. act. 3pl","answer":"vellent"},{"label":"perf. subj. act. 1sg","answer":"voluerim"},{"label":"perf. subj. act. 2sg","answer":"voluerīs"},{"label":"perf. subj. act. 3sg","answer":"voluerit"},{"label":"perf. subj. act. 1pl","answer":"voluerīmus"},{"label":"perf. subj. act. 2pl","answer":"voluerītis"},{"label":"perf. subj. act. 3pl","answer":"voluerint"},{"label":"plup. subj. act. 1sg","answer":"voluissem"},{"label":"plup. subj. act. 2sg","answer":"voluissēs"},{"label":"plup. subj. act. 3sg","answer":"voluisset"},{"label":"plup. subj. act. 1pl","answer":"voluissēmus"},{"label":"plup. subj. act. 2pl","answer":"voluissētis"},{"label":"plup. subj. act. 3pl","answer":"voluissent"}]},{"id":"nōlō","sheet":"nōlō","category":"verb","name":"nōlō — don't want","principal_parts":"nōlō, nōlle, nōluī","prompts":[{"label":"pres. ind. act. 1sg","answer":"nōlō"},{"label":"pres. ind. act. 2sg","answer":"nōn vīs"},{"label":"pres. ind. act. 3sg","answer":"nōn vult"},{"label":"pres. ind. act. 1pl","answer":"nōlumus"},{"label":"pres. ind. act. 2pl","answer":"nōn vultis"},{"label":"pres. ind. act. 3pl","answer":"nōlunt"},{"label":"imp. ind. act. 1sg","answer":"nōlēbam"},{"label":"imp. ind. act. 2sg","answer":"nōlēbās"},{"label":"imp. ind. act. 3sg","answer":"nōlēbat"},{"label":"imp. ind. act. 1pl","answer":"nōlēbāmus"},{"label":"imp. ind. act. 2pl","answer":"nōlēbātis"},{"label":"imp. ind. act. 3pl","answer":"nōlēbant"},{"label":"fut. ind. act. 1sg","answer":"nōlam"},{"label":"fut. ind. act. 2sg","answer":"nōlēs"},{"label":"fut. ind. act. 3sg","answer":"nōlet"},{"label":"fut. ind. act. 1pl","answer":"nōlēmus"},{"label":"fut. ind. act. 2pl","answer":"nōlētis"},{"label":"fut. ind. act. 3pl","answer":"nōlent"},{"label":"perf. ind. act. 1sg","answer":"nōluī"},{"label":"perf. ind. act. 2sg","answer":"nōluistī"},{"label":"perf. ind. act. 3sg","answer":"nōluit"},{"label":"perf. ind. act. 1pl","answer":"nōluimus"},{"label":"perf. ind. act. 2pl","answer":"nōluistis"},{"label":"perf. ind. act. 3pl","answer":"nōluērunt, nōluēre"},{"label":"plup. ind. act. 1sg","answer":"nōlueram"},{"label":"plup. ind. act. 2sg","answer":"nōluerās"},{"label":"plup. ind. act. 3sg","answer":"nōluerat"},{"label":"plup. ind. act. 1pl","answer":"nōluerāmus"},{"label":"plup. ind. act. 2pl","answer":"nōluerātis"},{"label":"plup. ind. act. 3pl","answer":"nōluerant"},{"label":"fut.perf. ind. act. 1sg","answer":"nōluerō"},{"label":"fut.perf. ind. act. 2sg","answer":"nōlueris"},{"label":"fut.perf. ind. act. 3sg","answer":"nōluerit"},{"label":"fut.perf. ind. act. 1pl","answer":"nōluerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"nōlueritis"},{"label":"fut.perf. ind. act. 3pl","answer":"nōluerint"},{"label":"pres. subj. act. 1sg","answer":"nōlim"},{"label":"pres. subj. act. 2sg","answer":"nōlīs"},{"label":"pres. subj. act. 3sg","answer":"nōlit"},{"label":"pres. subj. act. 1pl","answer":"nōlīmus"},{"label":"pres. subj. act. 2pl","answer":"nōlītis"},{"label":"pres. subj. act. 3pl","answer":"nōlint"},{"label":"imp. subj. act. 1sg","answer":"nōllem"},{"label":"imp. subj. act. 2sg","answer":"nōllēs"},{"label":"imp. subj. act. 3sg","answer":"nōllet"},{"label":"imp. subj. act. 1pl","answer":"nōllēmus"},{"label":"imp. subj. act. 2pl","answer":"nōllētis"},{"label":"imp. subj. act. 3pl","answer":"nōllent"},{"label":"perf. subj. act. 1sg","answer":"nōluerim"},{"label":"perf. subj. act. 2sg","answer":"nōluerīs"},{"label":"perf. subj. act. 3sg","answer":"nōluerit"},{"label":"perf. subj. act. 1pl","answer":"nōluerīmus"},{"label":"perf. subj. act. 2pl","answer":"nōluerītis"},{"label":"perf. subj. act. 3pl","answer":"nōluerint"},{"label":"plup. subj. act. 1sg","answer":"nōluissem"},{"label":"plup. subj. act. 2sg","answer":"nōluissēs"},{"label":"plup. subj. act. 3sg","answer":"nōluisset"},{"label":"plup. subj. act. 1pl","answer":"nōluissēmus"},{"label":"plup. subj. act. 2pl","answer":"nōluissētis"},{"label":"plup. subj. act. 3pl","answer":"nōluissent"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"nōlī"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"nōlīte"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"nōlitō"},{"label":"fut. imper. act. 3sg","answer":"nōlitō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"nōlitōte"},{"label":"fut. imper. act. 3pl","answer":"nōluntō"}]},{"id":"mālō","sheet":"mālō","category":"verb","name":"mālō — prefer","principal_parts":"mālō, mālle, māluī","prompts":[{"label":"pres. ind. act. 1sg","answer":"mālō"},{"label":"pres. ind. act. 2sg","answer":"māvīs"},{"label":"pres. ind. act. 3sg","answer":"māvult"},{"label":"pres. ind. act. 1pl","answer":"mālumus"},{"label":"pres. ind. act. 2pl","answer":"māvultis"},{"label":"pres. ind. act. 3pl","answer":"mālunt"},{"label":"imp. ind. act. 1sg","answer":"mālēbam"},{"label":"imp. ind. act. 2sg","answer":"mālēbās"},{"label":"imp. ind. act. 3sg","answer":"mālēbat"},{"label":"imp. ind. act. 1pl","answer":"mālēbāmus"},{"label":"imp. ind. act. 2pl","answer":"mālēbātis"},{"label":"imp. ind. act. 3pl","answer":"mālēbant"},{"label":"fut. ind. act. 1sg","answer":"mālam"},{"label":"fut. ind. act. 2sg","answer":"mālēs"},{"label":"fut. ind. act. 3sg","answer":"mālet"},{"label":"fut. ind. act. 1pl","answer":"mālēmus"},{"label":"fut. ind. act. 2pl","answer":"mālētis"},{"label":"fut. ind. act. 3pl","answer":"mālent"},{"label":"perf. ind. act. 1sg","answer":"māluī"},{"label":"perf. ind. act. 2sg","answer":"māluistī"},{"label":"perf. ind. act. 3sg","answer":"māluit"},{"label":"perf. ind. act. 1pl","answer":"māluimus"},{"label":"perf. ind. act. 2pl","answer":"māluistis"},{"label":"perf. ind. act. 3pl","answer":"māluērunt, māluēre"},{"label":"plup. ind. act. 1sg","answer":"mālueram"},{"label":"plup. ind. act. 2sg","answer":"māluerās"},{"label":"plup. ind. act. 3sg","answer":"māluerat"},{"label":"plup. ind. act. 1pl","answer":"māluerāmus"},{"label":"plup. ind. act. 2pl","answer":"māluerātis"},{"label":"plup. ind. act. 3pl","answer":"māluerant"},{"label":"fut.perf. ind. act. 1sg","answer":"māluerō"},{"label":"fut.perf. ind. act. 2sg","answer":"mālueris"},{"label":"fut.perf. ind. act. 3sg","answer":"māluerit"},{"label":"fut.perf. ind. act. 1pl","answer":"māluerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"mālueritis"},{"label":"fut.perf. ind. act. 3pl","answer":"māluerint"},{"label":"pres. subj. act. 1sg","answer":"mālim"},{"label":"pres. subj. act. 2sg","answer":"mālīs"},{"label":"pres. subj. act. 3sg","answer":"mālit"},{"label":"pres. subj. act. 1pl","answer":"mālīmus"},{"label":"pres. subj. act. 2pl","answer":"mālītis"},{"label":"pres. subj. act. 3pl","answer":"mālint"},{"label":"imp. subj. act. 1sg","answer":"māllem"},{"label":"imp. subj. act. 2sg","answer":"māllēs"},{"label":"imp. subj. act. 3sg","answer":"māllet"},{"label":"imp. subj. act. 1pl","answer":"māllēmus"},{"label":"imp. subj. act. 2pl","answer":"māllētis"},{"label":"imp. subj. act. 3pl","answer":"māllent"},{"label":"perf. subj. act. 1sg","answer":"māluerim"},{"label":"perf. subj. act. 2sg","answer":"māluerīs"},{"label":"perf. subj. act. 3sg","answer":"māluerit"},{"label":"perf. subj. act. 1pl","answer":"māluerīmus"},{"label":"perf. subj. act. 2pl","answer":"māluerītis"},{"label":"perf. subj. act. 3pl","answer":"māluerint"},{"label":"plup. subj. act. 1sg","answer":"māluissem"},{"label":"plup. subj. act. 2sg","answer":"māluissēs"},{"label":"plup. subj. act. 3sg","answer":"māluisset"},{"label":"plup. subj. act. 1pl","answer":"māluissēmus"},{"label":"plup. subj. act. 2pl","answer":"māluissētis"},{"label":"plup. subj. act. 3pl","answer":"māluissent"}]},{"id":"eō","sheet":"eō","category":"verb","name":"eō — go","principal_parts":"eō, īre, īvī, itum","prompts":[{"label":"pres. ind. act. 1sg","answer":"eō"},{"label":"pres. ind. act. 2sg","answer":"īs"},{"label":"pres. ind. act. 3sg","answer":"it"},{"label":"pres. ind. act. 1pl","answer":"īmus"},{"label":"pres. ind. act. 2pl","answer":"ītis"},{"label":"pres. ind. act. 3pl","answer":"eunt"},{"label":"imp. ind. act. 1sg","answer":"ībam"},{"label":"imp. ind. act. 2sg","answer":"ībās"},{"label":"imp. ind. act. 3sg","answer":"ībat"},{"label":"imp. ind. act. 1pl","answer":"ībāmus"},{"label":"imp. ind. act. 2pl","answer":"ībātis"},{"label":"imp. ind. act. 3pl","answer":"ībant"},{"label":"fut. ind. act. 1sg","answer":"ībō"},{"label":"fut. ind. act. 2sg","answer":"ībis"},{"label":"fut. ind. act. 3sg","answer":"ībit"},{"label":"fut. ind. act. 1pl","answer":"ībimus"},{"label":"fut. ind. act. 2pl","answer":"ībitis"},{"label":"fut. ind. act. 3pl","answer":"ībunt"},{"label":"perf. ind. act. 1sg","answer":"iī, īvī"},{"label":"perf. ind. act. 2sg","answer":"īstī, īvistī"},{"label":"perf. ind. act. 3sg","answer":"iit, īvit"},{"label":"perf. ind. act. 1pl","answer":"iimus"},{"label":"perf. ind. act. 2pl","answer":"īstis"},{"label":"perf. ind. act. 3pl","answer":"iērunt, iēre"},{"label":"plup. ind. act. 1sg","answer":"ieram"},{"label":"plup. ind. act. 2sg","answer":"ierās"},{"label":"plup. ind. act. 3sg","answer":"ierat"},{"label":"plup. ind. act. 1pl","answer":"ierāmus"},{"label":"plup. ind. act. 2pl","answer":"ierātis"},{"label":"plup. ind. act. 3pl","answer":"ierant"},{"label":"fut.perf. ind. act. 1sg","answer":"ierō"},{"label":"fut.perf. ind. act. 2sg","answer":"ieris"},{"label":"fut.perf. ind. act. 3sg","answer":"ierit"},{"label":"fut.perf. ind. act. 1pl","answer":"ierimus"},{"label":"fut.perf. ind. act. 2pl","answer":"ieritis"},{"label":"fut.perf. ind. act. 3pl","answer":"ierint"},{"label":"pres. ind. pass. 1sg","answer":"eor"},{"label":"pres. ind. pass. 2sg","answer":"īris, īre"},{"label":"pres. ind. pass. 3sg","answer":"ītur"},{"label":"pres. ind. pass. 1pl","answer":"īmur"},{"label":"pres. ind. pass. 2pl","answer":"īminī"},{"label":"pres. ind. pass. 3pl","answer":"euntur"},{"label":"imp. ind. pass. 1sg","answer":"ībar"},{"label":"imp. ind. pass. 2sg","answer":"ībāris, ībāre"},{"label":"imp. ind. pass. 3sg","answer":"ībātur"},{"label":"imp. ind. pass. 1pl","answer":"ībāmur"},{"label":"imp. ind. pass. 2pl","answer":"ībāminī"},{"label":"imp. ind. pass. 3pl","answer":"ībantur"},{"label":"fut. ind. pass. 1sg","answer":"ībor"},{"label":"fut. ind. pass. 2sg","answer":"īberis, ībere"},{"label":"fut. ind. pass. 3sg","answer":"ībitur"},{"label":"fut. ind. pass. 1pl","answer":"ībimur"},{"label":"fut. ind. pass. 2pl","answer":"ībiminī"},{"label":"fut. ind. pass. 3pl","answer":"ībuntur"},{"label":"pres. subj. act. 1sg","answer":"eam"},{"label":"pres. subj. act. 2sg","answer":"eās"},{"label":"pres. subj. act. 3sg","answer":"eat"},{"label":"pres. subj. act. 1pl","answer":"eāmus"},{"label":"pres. subj. act. 2pl","answer":"eātis"},{"label":"pres. subj. act. 3pl","answer":"eant"},{"label":"imp. subj. act. 1sg","answer":"īrem"},{"label":"imp. subj. act. 2sg","answer":"īrēs"},{"label":"imp. subj. act. 3sg","answer":"īret"},{"label":"imp. subj. act. 1pl","answer":"īrēmus"},{"label":"imp. subj. act. 2pl","answer":"īrētis"},{"label":"imp. subj. act. 3pl","answer":"īrent"},{"label":"perf. subj. act. 1sg","answer":"ierim"},{"label":"perf. subj. act. 2sg","answer":"ierīs"},{"label":"perf. subj. act. 3sg","answer":"ierit"},{"label":"perf. subj. act. 1pl","answer":"ierīmus"},{"label":"perf. subj. act. 2pl","answer":"ierītis"},{"label":"perf. subj. act. 3pl","answer":"ierint"},{"label":"plup. subj. act. 1sg","answer":"īssem"},{"label":"plup. subj. act. 2sg","answer":"īssēs"},{"label":"plup. subj. act. 3sg","answer":"īsset"},{"label":"plup. subj. act. 1pl","answer":"īssēmus"},{"label":"plup. subj. act. 2pl","answer":"īssētis"},{"label":"plup. subj. act. 3pl","answer":"īssent"},{"label":"pres. subj. pass. 1sg","answer":"ear"},{"label":"pres. subj. pass. 2sg","answer":"eāris, eāre"},{"label":"pres. subj. pass. 3sg","answer":"eātur"},{"label":"pres. subj. pass. 1pl","answer":"eāmur"},{"label":"pres. subj. pass. 2pl","answer":"eāminī"},{"label":"pres. subj. pass. 3pl","answer":"eantur"},{"label":"imp. subj. pass. 1sg","answer":"īrer"},{"label":"imp. subj. pass. 2sg","answer":"īrēris, īrēre"},{"label":"imp. subj. pass. 3sg","answer":"īrētur"},{"label":"imp. subj. pass. 1pl","answer":"īrēmur"},{"label":"imp. subj. pass. 2pl","answer":"īrēminī"},{"label":"imp. subj. pass. 3pl","answer":"īrentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"ī"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"īte"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"ītō"},{"label":"fut. imper. act. 3sg","answer":"ītō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"ītōte"},{"label":"fut. imper. act. 3pl","answer":"euntō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"īre"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"īminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"ītor"},{"label":"fut. imper. pass. 3sg","answer":"ītor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"euntor"}]},{"id":"ferō","sheet":"ferō","category":"verb","name":"ferō — carry","principal_parts":"ferō, ferre, tulī, lātum","prompts":[{"label":"pres. ind. act. 1sg","answer":"ferō"},{"label":"pres. ind. act. 2sg","answer":"fers"},{"label":"pres. ind. act. 3sg","answer":"fert"},{"label":"pres. ind. act. 1pl","answer":"ferimus"},{"label":"pres. ind. act. 2pl","answer":"fertis"},{"label":"pres. ind. act. 3pl","answer":"ferunt"},{"label":"imp. ind. act. 1sg","answer":"ferēbam"},{"label":"imp. ind. act. 2sg","answer":"ferēbās"},{"label":"imp. ind. act. 3sg","answer":"ferēbat"},{"label":"imp. ind. act. 1pl","answer":"ferēbāmus"},{"label":"imp. ind. act. 2pl","answer":"ferēbātis"},{"label":"imp. ind. act. 3pl","answer":"ferēbant"},{"label":"fut. ind. act. 1sg","answer":"feram"},{"label":"fut. ind. act. 2sg","answer":"ferēs"},{"label":"fut. ind. act. 3sg","answer":"feret"},{"label":"fut. ind. act. 1pl","answer":"ferēmus"},{"label":"fut. ind. act. 2pl","answer":"ferētis"},{"label":"fut. ind. act. 3pl","answer":"ferent"},{"label":"perf. ind. act. 1sg","answer":"tulī, tetulī"},{"label":"perf. ind. act. 2sg","answer":"tulistī, tetulistī"},{"label":"perf. ind. act. 3sg","answer":"tulit, tetulit"},{"label":"perf. ind. act. 1pl","answer":"tulimus, tetulimus"},{"label":"perf. ind. act. 2pl","answer":"tulistis, tetulistis"},{"label":"perf. ind. act. 3pl","answer":"tulērunt, tulēre, tetulērunt, tetulēre"},{"label":"plup. ind. act. 1sg","answer":"tuleram, tetuleram"},{"label":"plup. ind. act. 2sg","answer":"tulerās, tetulerās"},{"label":"plup. ind. act. 3sg","answer":"tulerat, tetulerat"},{"label":"plup. ind. act. 1pl","answer":"tulerāmus, tetulerāmus"},{"label":"plup. ind. act. 2pl","answer":"tulerātis, tetulerātis"},{"label":"plup. ind. act. 3pl","answer":"tulerant, tetulerant"},{"label":"fut.perf. ind. act. 1sg","answer":"tulerō, tetulerō"},{"label":"fut.perf. ind. act. 2sg","answer":"tuleris, tetuleris"},{"label":"fut.perf. ind. act. 3sg","answer":"tulerit, tetulerit"},{"label":"fut.perf. ind. act. 1pl","answer":"tulerimus, tetulerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"tuleritis, tetuleritis"},{"label":"fut.perf. ind. act. 3pl","answer":"tulerint, tetulerint"},{"label":"pres. ind. pass. 1sg","answer":"feror"},{"label":"pres. ind. pass. 2sg","answer":"ferris, ferre"},{"label":"pres. ind. pass. 3sg","answer":"fertur"},{"label":"pres. ind. pass. 1pl","answer":"ferimur"},{"label":"pres. ind. pass. 2pl","answer":"feriminī"},{"label":"pres. ind. pass. 3pl","answer":"feruntur"},{"label":"imp. ind. pass. 1sg","answer":"ferēbar"},{"label":"imp. ind. pass. 2sg","answer":"ferēbāris, ferēbāre"},{"label":"imp. ind. pass. 3sg","answer":"ferēbātur"},{"label":"imp. ind. pass. 1pl","answer":"ferēbāmur"},{"label":"imp. ind. pass. 2pl","answer":"ferēbāminī"},{"label":"imp. ind. pass. 3pl","answer":"ferēbantur"},{"label":"fut. ind. pass. 1sg","answer":"ferar"},{"label":"fut. ind. pass. 2sg","answer":"ferēris, ferēre"},{"label":"fut. ind. pass. 3sg","answer":"ferētur"},{"label":"fut. ind. pass. 1pl","answer":"ferēmur"},{"label":"fut. ind. pass. 2pl","answer":"ferēminī"},{"label":"fut. ind. pass. 3pl","answer":"ferentur"},{"label":"pres. subj. act. 1sg","answer":"feram"},{"label":"pres. subj. act. 2sg","answer":"ferās"},{"label":"pres. subj. act. 3sg","answer":"ferat"},{"label":"pres. subj. act. 1pl","answer":"ferāmus"},{"label":"pres. subj. act. 2pl","answer":"ferātis"},{"label":"pres. subj. act. 3pl","answer":"ferant"},{"label":"imp. subj. act. 1sg","answer":"ferrem"},{"label":"imp. subj. act. 2sg","answer":"ferrēs"},{"label":"imp. subj. act. 3sg","answer":"ferret"},{"label":"imp. subj. act. 1pl","answer":"ferrēmus"},{"label":"imp. subj. act. 2pl","answer":"ferrētis"},{"label":"imp. subj. act. 3pl","answer":"ferrent"},{"label":"perf. subj. act. 1sg","answer":"tulerim, tetulerim"},{"label":"perf. subj. act. 2sg","answer":"tulerīs, tetulerīs"},{"label":"perf. subj. act. 3sg","answer":"tulerit, tetulerit"},{"label":"perf. subj. act. 1pl","answer":"tulerīmus, tetulerīmus"},{"label":"perf. subj. act. 2pl","answer":"tulerītis, tetulerītis"},{"label":"perf. subj. act. 3pl","answer":"tulerint, tetulerint"},{"label":"plup. subj. act. 1sg","answer":"tulissem, tetulissem"},{"label":"plup. subj. act. 2sg","answer":"tulissēs, tetulissēs"},{"label":"plup. subj. act. 3sg","answer":"tulisset, tetulisset"},{"label":"plup. subj. act. 1pl","answer":"tulissēmus, tetulissēmus"},{"label":"plup. subj. act. 2pl","answer":"tulissētis, tetulissētis"},{"label":"plup. subj. act. 3pl","answer":"tulissent, tetulissent"},{"label":"pres. subj. pass. 1sg","answer":"ferar"},{"label":"pres. subj. pass. 2sg","answer":"ferāris, ferāre"},{"label":"pres. subj. pass. 3sg","answer":"ferātur"},{"label":"pres. subj. pass. 1pl","answer":"ferāmur"},{"label":"pres. subj. pass. 2pl","answer":"ferāminī"},{"label":"pres. subj. pass. 3pl","answer":"ferantur"},{"label":"imp. subj. pass. 1sg","answer":"ferrer"},{"label":"imp. subj. pass. 2sg","answer":"ferrēris, ferrēre"},{"label":"imp. subj. pass. 3sg","answer":"ferrētur"},{"label":"imp. subj. pass. 1pl","answer":"ferrēmur"},{"label":"imp. subj. pass. 2pl","answer":"ferrēminī"},{"label":"imp. subj. pass. 3pl","answer":"ferrentur"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"fer"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"ferte"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"fertō"},{"label":"fut. imper. act. 3sg","answer":"fertō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"fertōte"},{"label":"fut. imper. act. 3pl","answer":"feruntō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"ferre"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"feriminī"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"fertor"},{"label":"fut. imper. pass. 3sg","answer":"fertor"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"—"},{"label":"fut. imper. pass. 3pl","answer":"feruntor"}]},{"id":"faciō","sheet":"faciō","category":"verb","name":"faciō — do","principal_parts":"faciō, facere, fēcī, factum","prompts":[{"label":"pres. ind. act. 1sg","answer":"faciō"},{"label":"pres. ind. act. 2sg","answer":"facis"},{"label":"pres. ind. act. 3sg","answer":"facit"},{"label":"pres. ind. act. 1pl","answer":"facimus"},{"label":"pres. ind. act. 2pl","answer":"facitis"},{"label":"pres. ind. act. 3pl","answer":"faciunt"},{"label":"imp. ind. act. 1sg","answer":"faciēbam"},{"label":"imp. ind. act. 2sg","answer":"faciēbās"},{"label":"imp. ind. act. 3sg","answer":"faciēbat"},{"label":"imp. ind. act. 1pl","answer":"faciēbāmus"},{"label":"imp. ind. act. 2pl","answer":"faciēbātis"},{"label":"imp. ind. act. 3pl","answer":"faciēbant"},{"label":"fut. ind. act. 1sg","answer":"faciam"},{"label":"fut. ind. act. 2sg","answer":"faciēs"},{"label":"fut. ind. act. 3sg","answer":"faciet"},{"label":"fut. ind. act. 1pl","answer":"faciēmus"},{"label":"fut. ind. act. 2pl","answer":"faciētis"},{"label":"fut. ind. act. 3pl","answer":"facient"},{"label":"perf. ind. act. 1sg","answer":"fēcī"},{"label":"perf. ind. act. 2sg","answer":"fēcistī"},{"label":"perf. ind. act. 3sg","answer":"fēcit"},{"label":"perf. ind. act. 1pl","answer":"fēcimus"},{"label":"perf. ind. act. 2pl","answer":"fēcistis"},{"label":"perf. ind. act. 3pl","answer":"fēcērunt, fēcēre"},{"label":"plup. ind. act. 1sg","answer":"fēceram"},{"label":"plup. ind. act. 2sg","answer":"fēcerās"},{"label":"plup. ind. act. 3sg","answer":"fēcerat"},{"label":"plup. ind. act. 1pl","answer":"fēcerāmus"},{"label":"plup. ind. act. 2pl","answer":"fēcerātis"},{"label":"plup. ind. act. 3pl","answer":"fēcerant"},{"label":"fut.perf. ind. act. 1sg","answer":"fēcerō"},{"label":"fut.perf. ind. act. 2sg","answer":"fēceris"},{"label":"fut.perf. ind. act. 3sg","answer":"fēcerit"},{"label":"fut.perf. ind. act. 1pl","answer":"fēcerimus"},{"label":"fut.perf. ind. act. 2pl","answer":"fēceritis"},{"label":"fut.perf. ind. act. 3pl","answer":"fēcerint"},{"label":"pres. ind. pass. 1sg","answer":"fīō"},{"label":"pres. ind. pass. 2sg","answer":"fīs"},{"label":"pres. ind. pass. 3sg","answer":"fit"},{"label":"pres. ind. pass. 1pl","answer":"fīmus"},{"label":"pres. ind. pass. 2pl","answer":"fītis"},{"label":"pres. ind. pass. 3pl","answer":"fīunt"},{"label":"imp. ind. pass. 1sg","answer":"fīēbam"},{"label":"imp. ind. pass. 2sg","answer":"fīēbās"},{"label":"imp. ind. pass. 3sg","answer":"fīēbat"},{"label":"imp. ind. pass. 1pl","answer":"fīēbāmus"},{"label":"imp. ind. pass. 2pl","answer":"fīēbātis"},{"label":"imp. ind. pass. 3pl","answer":"fīēbant"},{"label":"fut. ind. pass. 1sg","answer":"fīam"},{"label":"fut. ind. pass. 2sg","answer":"fīēs"},{"label":"fut. ind. pass. 3sg","answer":"fīet"},{"label":"fut. ind. pass. 1pl","answer":"fīēmus"},{"label":"fut. ind. pass. 2pl","answer":"fīētis"},{"label":"fut. ind. pass. 3pl","answer":"fīent"},{"label":"pres. subj. act. 1sg","answer":"faciam"},{"label":"pres. subj. act. 2sg","answer":"faciās"},{"label":"pres. subj. act. 3sg","answer":"faciat"},{"label":"pres. subj. act. 1pl","answer":"faciāmus"},{"label":"pres. subj. act. 2pl","answer":"faciātis"},{"label":"pres. subj. act. 3pl","answer":"faciant"},{"label":"imp. subj. act. 1sg","answer":"facerem"},{"label":"imp. subj. act. 2sg","answer":"facerēs"},{"label":"imp. subj. act. 3sg","answer":"faceret"},{"label":"imp. subj. act. 1pl","answer":"facerēmus"},{"label":"imp. subj. act. 2pl","answer":"facerētis"},{"label":"imp. subj. act. 3pl","answer":"facerent"},{"label":"perf. subj. act. 1sg","answer":"fēcerim"},{"label":"perf. subj. act. 2sg","answer":"fēcerīs"},{"label":"perf. subj. act. 3sg","answer":"fēcerit"},{"label":"perf. subj. act. 1pl","answer":"fēcerīmus"},{"label":"perf. subj. act. 2pl","answer":"fēcerītis"},{"label":"perf. subj. act. 3pl","answer":"fēcerint"},{"label":"plup. subj. act. 1sg","answer":"fēcissem"},{"label":"plup. subj. act. 2sg","answer":"fēcissēs"},{"label":"plup. subj. act. 3sg","answer":"fēcisset"},{"label":"plup. subj. act. 1pl","answer":"fēcissēmus"},{"label":"plup. subj. act. 2pl","answer":"fēcissētis"},{"label":"plup. subj. act. 3pl","answer":"fēcissent"},{"label":"pres. subj. pass. 1sg","answer":"fīam"},{"label":"pres. subj. pass. 2sg","answer":"fīās"},{"label":"pres. subj. pass. 3sg","answer":"fīat"},{"label":"pres. subj. pass. 1pl","answer":"fīāmus"},{"label":"pres. subj. pass. 2pl","answer":"fīātis"},{"label":"pres. subj. pass. 3pl","answer":"fīant"},{"label":"imp. subj. pass. 1sg","answer":"fierem"},{"label":"imp. subj. pass. 2sg","answer":"fierēs"},{"label":"imp. subj. pass. 3sg","answer":"fieret"},{"label":"imp. subj. pass. 1pl","answer":"fierēmus"},{"label":"imp. subj. pass. 2pl","answer":"fierētis"},{"label":"imp. subj. pass. 3pl","answer":"fierent"},{"label":"pres. imper. act. 1sg","answer":"—"},{"label":"pres. imper. act. 2sg","answer":"fac"},{"label":"pres. imper. act. 3sg","answer":"—"},{"label":"pres. imper. act. 1pl","answer":"—"},{"label":"pres. imper. act. 2pl","answer":"facite"},{"label":"pres. imper. act. 3pl","answer":"—"},{"label":"fut. imper. act. 1sg","answer":"—"},{"label":"fut. imper. act. 2sg","answer":"facitō"},{"label":"fut. imper. act. 3sg","answer":"facitō"},{"label":"fut. imper. act. 1pl","answer":"—"},{"label":"fut. imper. act. 2pl","answer":"facitōte"},{"label":"fut. imper. act. 3pl","answer":"faciuntō"},{"label":"pres. imper. pass. 1sg","answer":"—"},{"label":"pres. imper. pass. 2sg","answer":"fī"},{"label":"pres. imper. pass. 3sg","answer":"—"},{"label":"pres. imper. pass. 1pl","answer":"—"},{"label":"pres. imper. pass. 2pl","answer":"fīte"},{"label":"pres. imper. pass. 3pl","answer":"—"},{"label":"fut. imper. pass. 1sg","answer":"—"},{"label":"fut. imper. pass. 2sg","answer":"fītō"},{"label":"fut. imper. pass. 3sg","answer":"fītō"},{"label":"fut. imper. pass. 1pl","answer":"—"},{"label":"fut. imper. pass. 2pl","answer":"fītōte"},{"label":"fut. imper. pass. 3pl","answer":"fīuntō"}]}];
+window.__AUDIO__ = {};
+</script>
+<script>
+(function() {
+  const PARADIGMS = window.__PARADIGMS__;
+  const AUDIO = window.__AUDIO__ || {};
+  const STORAGE_KEY = 'dowling_drill_v3';
+
+  // ============== STATE ==============
+  let state = {
+    view: 'picker',          // 'picker' | 'mode' | 'drill' | 'table' | 'done'
+    macronStrict: false,
+    filter: 'all',
+    repCounts: {},
+    repCountsTable: {},       // separate rep counts per paradigm for table mode
+    currentParadigm: null,
+    currentMode: null,        // 'random' or 'table'
+    // random mode state
+    promptOrder: [],
+    promptIdx: 0,
+    correctCount: 0,
+    wrongCount: 0,
+    answered: false,
+    typed: '',
+    // table mode state — selected sub-table for verbs
+    verbSelection: { mood: 'indicative', tense: 'present', voice: 'active' },
+    tableValues: {},          // form_index -> typed value
+    tableChecked: false,
+    tableResults: {},         // form_index -> 'correct' | 'wrong' | 'revealed'
+  };
+
+  // In artifact sandbox: storage is in-memory only. Reps will reset on reload.
+  function persist() {}
+
+  const app = document.getElementById('app');
+  const modalRoot = document.getElementById('modal-root');
+  const barTitle = document.getElementById('bar-title');
+  const barSubtitle = document.getElementById('bar-subtitle');
+
+  // ============== AUDIO ==============
+  // iOS Safari refuses to play audio from data: URLs. Decode base64 to a Blob
+  // and create an object URL instead. Cache per paradigm so we don't redecode.
+  let currentAudio = null;
+  const audioUrlCache = {};
+
+  function base64ToBlob(b64, mimeType) {
+    const byteChars = atob(b64);
+    const byteNumbers = new Array(byteChars.length);
+    for (let i = 0; i < byteChars.length; i++) {
+      byteNumbers[i] = byteChars.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
+  }
+
+  function getAudioFor(paradigmId) {
+    if (audioUrlCache[paradigmId]) return audioUrlCache[paradigmId];
+    const b64 = AUDIO[paradigmId];
+    if (!b64) return null;
+    try {
+      // mp3 is universally supported on iOS Safari from blob URLs.
+      const blob = base64ToBlob(b64, 'audio/mpeg');
+      const url = URL.createObjectURL(blob);
+      audioUrlCache[paradigmId] = url;
+      return url;
+    } catch (e) {
+      console.error('audio decode failed', e);
+      return null;
+    }
+  }
+
+  function hasAudioFor(paradigmId) {
+    return !!AUDIO[paradigmId];
+  }
+
+  function stopAudio() {
+    if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  }
+
+  // ============== HELPERS ==============
+  function stripMacrons(s) {
+    if (!s) return s;
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+            .replace(/j/g, 'i').replace(/v/g, 'u');
+  }
+  function normalize(s) { return (s || '').trim().replace(/\s+/g, ' '); }
+  function checkAnswer(typed, truth) {
+    const splitCands = truth.split(/[,/]\s*/).map(x => x.trim()).filter(Boolean);
+    const t = normalize(typed);
+    if (!t) return { ok: false };
+    for (const c of splitCands) {
+      if (state.macronStrict) {
+        if (t.toLowerCase() === c.toLowerCase()) return { ok: true, matched: c };
+      } else {
+        if (stripMacrons(t) === stripMacrons(c)) {
+          const exact = t.toLowerCase() === c.toLowerCase();
+          return { ok: true, matched: c, loose: !exact };
+        }
+      }
+    }
+    return { ok: false };
+  }
+  function shuffle(n) {
+    const arr = Array.from({length: n}, (_, i) => i);
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+  function fmtTime(s) {
+    if (!isFinite(s)) return '0:00';
+    const m = Math.floor(s/60); const sec = Math.floor(s%60);
+    return m + ':' + (sec<10?'0':'') + sec;
+  }
+  function paradigmGroup(p) {
+    if (p.category === 'noun') return { primary: '1. Nouns', secondary: p.sheet };
+    if (p.category === 'adjective') return { primary: '2. Adjectives', secondary: p.section || '' };
+    if (p.category === 'pronoun') return { primary: '3. Pronouns', secondary: p.section || '' };
+    if (p.category === 'comparison') return { primary: '4. Comparison', secondary: '' };
+    if (['1st conj','2nd conj','3rd conj','3rd conj i-stem','4th conj'].includes(p.sheet)) {
+      return { primary: '5. Regular Verbs', secondary: p.sheet };
+    }
+    return { primary: '6. Irregular Verbs', secondary: '' };
+  }
+
+  // ============== PARSE LABELS to extract case/number/gender/etc. ==============
+  // Noun: "nom sing." / "nom pl."
+  // Adj/Pronoun: "nom sing. m." / "nom pl. f." (also "nom sing." for personal pronouns)
+  // Verb: "pres. ind. act. 1sg"
+  // Comparison: "comparative of X" / "superlative of X"
+  function parsePromptLabel(label) {
+    // try noun/adj/pronoun first
+    let m = label.match(/^(nom|gen|dat|acc|abl|voc|loc) (sing\.|pl\.)( ([mfn]\.|m\.\/f\.|m\. & f\.|c\.))?$/);
+    if (m) {
+      return {
+        type: 'declined',
+        case: m[1],
+        number: m[2] === 'sing.' ? 'sg' : 'pl',
+        gender: m[4] || null
+      };
+    }
+    // verb form
+    m = label.match(/^(pres\.|imp\.|fut\.|perf\.|plup\.|fut\.perf\.) (ind\.|subj\.|imper\.) (act\.|pass\.) (1sg|2sg|3sg|1pl|2pl|3pl)$/);
+    if (m) {
+      const tenseMap = {'pres.':'present','imp.':'imperfect','fut.':'future','perf.':'perfect','plup.':'pluperfect','fut.perf.':'future perfect'};
+      const moodMap = {'ind.':'indicative','subj.':'subjunctive','imper.':'imperative'};
+      const voiceMap = {'act.':'active','pass.':'passive'};
+      return {
+        type: 'verb',
+        tense: tenseMap[m[1]],
+        mood: moodMap[m[2]],
+        voice: voiceMap[m[3]],
+        person: m[4]
+      };
+    }
+    // comparison
+    m = label.match(/^(comparative|superlative) of (.+)$/);
+    if (m) {
+      return { type: 'comparison', degree: m[1], positive: m[2] };
+    }
+    return { type: 'unknown', raw: label };
+  }
+
+  // ============== PICKER ==============
+  function renderPicker() {
+    stopAudio();
+    state.view = 'picker';
+    barTitle.textContent = 'Ranieri-Dowling';
+    barSubtitle.textContent = 'Pick a paradigm to drill';
+
+    let filtered = PARADIGMS;
+    if (state.filter !== 'all') {
+      filtered = PARADIGMS.filter(p => p.category === state.filter);
+    }
+    const groups = {};
+    for (const p of filtered) {
+      const g = paradigmGroup(p);
+      if (!groups[g.primary]) groups[g.primary] = {};
+      if (!groups[g.primary][g.secondary]) groups[g.primary][g.secondary] = [];
+      groups[g.primary][g.secondary].push(p);
+    }
+    let html = `
+      <div class="filter-tabs">
+        <button class="filter-tab ${state.filter==='all'?'active':''}" data-filter="all">All</button>
+        <button class="filter-tab ${state.filter==='noun'?'active':''}" data-filter="noun">Nouns</button>
+        <button class="filter-tab ${state.filter==='adjective'?'active':''}" data-filter="adjective">Adj.</button>
+        <button class="filter-tab ${state.filter==='pronoun'?'active':''}" data-filter="pronoun">Pron.</button>
+        <button class="filter-tab ${state.filter==='comparison'?'active':''}" data-filter="comparison">Comp.</button>
+        <button class="filter-tab ${state.filter==='verb'?'active':''}" data-filter="verb">Verbs</button>
+      </div>`;
+    const primaryOrder = ['1. Nouns','2. Adjectives','3. Pronouns','4. Comparison','5. Regular Verbs','6. Irregular Verbs'];
+    for (const primary of primaryOrder) {
+      if (!groups[primary]) continue;
+      html += `<div class="group-label">${primary}</div>`;
+      const subs = groups[primary];
+      const subKeys = Object.keys(subs);
+      const hasMultipleSubs = subKeys.length > 1 || (subKeys.length === 1 && subKeys[0]);
+      for (const sub of subKeys) {
+        if (hasMultipleSubs && sub) html += `<div class="subgroup-label">${sub}</div>`;
+        html += '<ul class="paradigm-list">';
+        for (const p of subs[sub]) {
+          const reps = (state.repCounts[p.id] || 0) + (state.repCountsTable[p.id] || 0);
+          let pipCls = 'reps-pip';
+          if (reps >= 100) pipCls += ' done';
+          else if (reps > 0) pipCls += ' partial';
+          const parts = p.name.split(' — ');
+          const display = parts.length === 2
+            ? `<span class="lemma">${escapeHtml(parts[0])}</span><span class="gloss">${escapeHtml(parts[1])}</span>`
+            : `<span class="lemma">${escapeHtml(p.name)}</span>`;
+          html += `<li class="paradigm-item" data-id="${escapeAttr(p.id)}">
+              <span class="paradigm-name">${display}</span>
+              <span class="paradigm-meta"><span class="form-count">${p.prompts.length}f</span><span class="${pipCls}">${reps}</span></span>
+            </li>`;
+        }
+        html += '</ul>';
+      }
+    }
+    app.innerHTML = html;
+    app.querySelectorAll('.filter-tab').forEach(t => {
+      t.onclick = () => { state.filter = t.dataset.filter; persist(); renderPicker(); };
+    });
+    app.querySelectorAll('.paradigm-item').forEach(li => {
+      li.onclick = () => openMode(li.dataset.id);
+    });
+  }
+
+  // ============== MODE PICKER ==============
+  function openMode(id) {
+    const p = PARADIGMS.find(x => x.id === id);
+    if (!p) return;
+    state.currentParadigm = p;
+    state.view = 'mode';
+    renderMode();
+  }
+  function renderMode() {
+    const p = state.currentParadigm;
+    const lemma = p.name.split(' — ')[0];
+    barTitle.textContent = lemma;
+    barSubtitle.textContent = p.principal_parts || (p.name.split(' — ')[1] || '');
+    const repsR = state.repCounts[p.id] || 0;
+    const repsT = state.repCountsTable[p.id] || 0;
+
+    const gloss = p.name.split(' — ')[1] || '';
+    const pp = p.principal_parts || '';
+    app.innerHTML = `
+      <div class="drill-header">
+        <button class="back-btn" id="back">paradigms</button>
+      </div>
+      <div class="lemma-display">
+        <div class="lemma-big">${escapeHtml(lemma)}</div>
+        ${gloss ? `<div class="lemma-gloss">${escapeHtml(gloss)}</div>` : ''}
+        ${pp ? `<div class="lemma-principal-parts">${escapeHtml(pp)}</div>` : ''}
+      </div>
+      <button class="mode-btn" data-mode="random">
+        <span class="mb-title">Random drill</span>
+        <span class="mb-desc">Each form prompted in turn. <span class="mb-stat">${repsR}/100 reps</span></span>
+      </button>
+      <button class="mode-btn" data-mode="table">
+        <span class="mb-title">Fill the table</span>
+        <span class="mb-desc">Type every form into the paradigm table at once. <span class="mb-stat">${repsT}/100 reps</span></span>
+      </button>
+    `;
+    document.getElementById('back').onclick = renderPicker;
+    app.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.onclick = () => {
+        const mode = btn.dataset.mode;
+        if (mode === 'random') startDrill();
+        else startTable();
+      };
+    });
+  }
+
+  // ============== RANDOM DRILL ==============
+  function startDrill() {
+    const p = state.currentParadigm;
+    state.promptOrder = shuffle(p.prompts.length);
+    state.promptIdx = 0;
+    state.correctCount = 0;
+    state.wrongCount = 0;
+    state.answered = false;
+    state.typed = '';
+    state.view = 'drill';
+    renderDrill();
+  }
+
+  function renderDrill() {
+    const p = state.currentParadigm;
+    const lemma = p.name.split(' — ')[0];
+    barTitle.textContent = lemma;
+    barSubtitle.textContent = 'Random drill';
+
+    const idx = state.promptOrder[state.promptIdx];
+    const q = p.prompts[idx];
+    const total = p.prompts.length;
+    const progress = ((state.promptIdx) / total) * 100;
+    const audioUrl = getAudioFor(p.id);
+
+    app.innerHTML = `
+      <div class="drill-header">
+        <button class="back-btn" id="back">back</button>
+        <div class="drill-counter">${state.promptIdx + 1}<span class="of">/</span>${total}</div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      ${audioUrl ? `
+      <div class="audio-bar">
+        <button class="audio-play-btn" id="audio-play" aria-label="Play audio">▶</button>
+        <div class="audio-controls-wrap">
+          <div class="audio-row1">
+            <span class="audio-label">Ranieri recitation</span>
+            <span class="audio-time" id="audio-time">0:00 / —:—</span>
+          </div>
+          <div class="audio-progress"><div class="audio-progress-fill" id="audio-fill"></div></div>
+        </div>
+      </div>` : ''}
+      <div class="prompt-label">Decline</div>
+      <div class="prompt-card">
+        <div class="prompt-question">
+          <span class="prompt-lemma">${escapeHtml(lemma)}</span>
+          <span class="prompt-divider">·</span>
+          <span class="prompt-spec">${escapeHtml(q.label)}</span>
+        </div>
+      </div>
+      <input type="text" class="answer-input" id="ans"
+             autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+             placeholder="type the form…" value="${escapeAttr(state.typed)}">
+      <div class="feedback" id="feedback"></div>
+      <div class="actions">
+        <button class="btn ghost" id="skip">Skip</button>
+        <button class="btn primary" id="check">Check</button>
+      </div>
+    `;
+
+    if (audioUrl) wireAudio(p.id, audioUrl);
+    else stopAudio();
+
+    const input = document.getElementById('ans');
+    const feedback = document.getElementById('feedback');
+    const checkBtn = document.getElementById('check');
+    if (!audioUrl) setTimeout(() => input.focus(), 50);
+
+    function doCheck() {
+      if (state.answered) { advance(); return; }
+      const typed = input.value;
+      const res = checkAnswer(typed, q.answer);
+      state.answered = true;
+      if (res.ok) {
+        state.correctCount++;
+        input.classList.add('correct');
+        feedback.className = 'feedback correct';
+        feedback.innerHTML = res.loose
+          ? `Correct ending. <span class="accepted">With macrons: <b>${escapeHtml(res.matched)}</b></span>`
+          : `Correct.`;
+      } else {
+        state.wrongCount++;
+        input.classList.add('wrong');
+        feedback.className = 'feedback wrong';
+        feedback.innerHTML = `Answer: <span class="truth">${escapeHtml(q.answer)}</span>`;
+      }
+      checkBtn.textContent = 'Next →';
+    }
+    function advance() {
+      state.promptIdx++;
+      state.answered = false;
+      state.typed = '';
+      if (state.promptIdx >= p.prompts.length) {
+        state.repCounts[p.id] = (state.repCounts[p.id] || 0) + 1;
+        persist();
+        state.view = 'done';
+        renderDone('random');
+      } else {
+        renderDrill();
+      }
+    }
+    checkBtn.onclick = doCheck;
+    document.getElementById('skip').onclick = () => {
+      if (state.answered) { advance(); return; }
+      state.wrongCount++;
+      state.answered = true;
+      input.value = '';
+      input.classList.add('wrong');
+      feedback.className = 'feedback wrong';
+      feedback.innerHTML = `Skipped. Answer: <span class="truth">${escapeHtml(q.answer)}</span>`;
+      checkBtn.textContent = 'Next →';
+    };
+    document.getElementById('back').onclick = () => {
+      stopAudio();
+      state.view = 'mode';
+      renderMode();
+    };
+    input.addEventListener('input', (e) => { state.typed = e.target.value; });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); doCheck(); }
+    });
+  }
+
+  function wireAudio(paradigmId, audioUrl) {
+    const playBtn = document.getElementById('audio-play');
+    const timeEl = document.getElementById('audio-time');
+    const fillEl = document.getElementById('audio-fill');
+    if (!currentAudio || currentAudio.dataset.paradigmId !== paradigmId) {
+      stopAudio();
+      const audio = new Audio(audioUrl);
+      audio.dataset.paradigmId = paradigmId;
+      audio.preload = 'metadata';
+      currentAudio = audio;
+    }
+    const audio = currentAudio;
+    function updatePlayBtn() {
+      if (audio.paused) { playBtn.textContent = '▶'; playBtn.classList.remove('playing'); }
+      else { playBtn.textContent = '❚❚'; playBtn.classList.add('playing'); }
+    }
+    function updateProgress() {
+      const cur = audio.currentTime || 0;
+      const dur = audio.duration || 0;
+      timeEl.textContent = fmtTime(cur) + ' / ' + (isFinite(dur) ? fmtTime(dur) : '—:—');
+      if (dur > 0) fillEl.style.width = (cur/dur*100) + '%';
+    }
+    audio.ontimeupdate = updateProgress;
+    audio.onplay = updatePlayBtn;
+    audio.onpause = updatePlayBtn;
+    audio.onloadedmetadata = updateProgress;
+    updatePlayBtn();
+    updateProgress();
+    playBtn.onclick = () => {
+      if (audio.paused) audio.play().catch(e => console.warn('play failed', e));
+      else audio.pause();
+    };
+  }
+
+  // ============== TABLE MODE ==============
+  function startTable() {
+    state.view = 'table';
+    state.tableValues = {};
+    state.tableChecked = false;
+    state.tableResults = {};
+    // Default verb selection from first available prompt
+    const p = state.currentParadigm;
+    if (p.category === 'verb') {
+      const parsedPrompts = p.prompts.map((q, i) => ({ ...parsePromptLabel(q.label), idx: i }));
+      const first = parsedPrompts.find(x => x.type === 'verb');
+      if (first) state.verbSelection = { mood: first.mood, tense: first.tense, voice: first.voice };
+    }
+    renderTable();
+  }
+
+  function getTablePromptsForCurrent() {
+    // Returns the filtered list of prompts shown in the current table view
+    const p = state.currentParadigm;
+    const parsed = p.prompts.map((q, i) => ({ q, parsed: parsePromptLabel(q.label), idx: i }));
+    if (p.category === 'verb') {
+      const sel = state.verbSelection;
+      if (sel.mood === 'imperative') {
+        return parsed.filter(x => x.parsed.type === 'verb' && x.parsed.mood === 'imperative' && x.parsed.voice === sel.voice);
+      }
+      return parsed.filter(x => x.parsed.type === 'verb'
+                                && x.parsed.mood === sel.mood
+                                && x.parsed.tense === sel.tense
+                                && x.parsed.voice === sel.voice);
+    }
+    return parsed;
+  }
+
+  function getAvailableVerbOptions() {
+    const p = state.currentParadigm;
+    const opts = { moods: new Set(), tenses: new Set(), voices: new Set() };
+    for (const q of p.prompts) {
+      const x = parsePromptLabel(q.label);
+      if (x.type === 'verb') {
+        opts.moods.add(x.mood);
+        opts.tenses.add(x.tense);
+        opts.voices.add(x.voice);
+      }
+    }
+    return { moods: [...opts.moods], tenses: [...opts.tenses], voices: [...opts.voices] };
+  }
+
+  function getAvailableForSelection() {
+    // For the currently-selected mood+voice, which tenses are actually available?
+    const p = state.currentParadigm;
+    const sel = state.verbSelection;
+    const tensesForMoodVoice = new Set();
+    const moodsForVoice = new Set();
+    const voicesForMood = new Set();
+    for (const q of p.prompts) {
+      const x = parsePromptLabel(q.label);
+      if (x.type !== 'verb') continue;
+      if (x.mood === sel.mood && x.voice === sel.voice) tensesForMoodVoice.add(x.tense);
+      if (x.voice === sel.voice) moodsForVoice.add(x.mood);
+      if (x.mood === sel.mood) voicesForMood.add(x.voice);
+    }
+    return { tensesForMoodVoice, moodsForVoice, voicesForMood };
+  }
+
+  function renderTable() {
+    const p = state.currentParadigm;
+    const lemma = p.name.split(' — ')[0];
+    barTitle.textContent = lemma;
+    barSubtitle.textContent = 'Fill the table';
+    const audioUrl = getAudioFor(p.id);
+
+    let html = `
+      <div class="drill-header">
+        <button class="back-btn" id="back">back</button>
+        <div class="drill-counter">table</div>
+      </div>
+      ${audioUrl ? `
+      <div class="audio-bar">
+        <button class="audio-play-btn" id="audio-play" aria-label="Play audio">▶</button>
+        <div class="audio-controls-wrap">
+          <div class="audio-row1">
+            <span class="audio-label">Ranieri recitation</span>
+            <span class="audio-time" id="audio-time">0:00 / —:—</span>
+          </div>
+          <div class="audio-progress"><div class="audio-progress-fill" id="audio-fill"></div></div>
+        </div>
+      </div>` : ''}
+    `;
+
+    if (p.category === 'verb') {
+      html += renderVerbPicker();
+    }
+
+    html += renderTableHtml();
+
+    // Stats line if checked
+    if (state.tableChecked) {
+      const correct = Object.values(state.tableResults).filter(v => v === 'correct').length;
+      const total = Object.keys(state.tableResults).length;
+      const wrong = total - correct;
+      html += `<div class="table-stats">
+        <span><span class="stat-label">Correct</span><span class="stat-val ok">${correct}</span></span>
+        <span><span class="stat-label">Missed</span><span class="stat-val ${wrong?'bad':''}">${wrong}</span></span>
+        <span><span class="stat-label">Total</span><span class="stat-val">${total}</span></span>
+      </div>`;
+    }
+
+    html += `<div class="actions">
+        <button class="btn ghost" id="reveal">Reveal all</button>
+        <button class="btn primary" id="check-table">${state.tableChecked ? 'Reset' : 'Check'}</button>
+      </div>`;
+
+    if (state.tableChecked && p.category === 'verb') {
+      html += `<div class="actions" style="margin-top:8px">
+        <button class="btn" id="continue-table">Continue to next sub-table →</button>
+      </div>`;
+    }
+
+    app.innerHTML = html;
+    if (audioUrl) wireAudio(p.id, audioUrl);
+    else stopAudio();
+
+    wireTableEvents();
+    document.getElementById('back').onclick = () => {
+      stopAudio();
+      state.view = 'mode';
+      renderMode();
+    };
+  }
+
+  function renderVerbPicker() {
+    const opts = getAvailableVerbOptions();
+    const sel = state.verbSelection;
+    const avail = getAvailableForSelection();
+
+    const moodOrder = ['indicative','subjunctive','imperative'];
+    const tenseOrder = ['present','imperfect','future','perfect','pluperfect','future perfect'];
+    const voiceOrder = ['active','passive'];
+
+    let html = '<div class="subtable-picker">';
+    html += '<div class="subtable-picker-label">Mood</div><div class="pill-row">';
+    for (const m of moodOrder) {
+      if (!opts.moods.includes(m)) continue;
+      const active = sel.mood === m ? 'active' : '';
+      const enabled = avail.moodsForVoice.has(m);
+      html += `<button class="pill ${active}" data-mood="${m}" ${enabled?'':'disabled'}>${m}</button>`;
+    }
+    html += '</div>';
+
+    if (sel.mood !== 'imperative') {
+      html += '<div class="subtable-picker-label">Tense</div><div class="pill-row">';
+      for (const t of tenseOrder) {
+        if (!opts.tenses.includes(t)) continue;
+        const active = sel.tense === t ? 'active' : '';
+        const enabled = avail.tensesForMoodVoice.has(t);
+        html += `<button class="pill ${active}" data-tense="${t}" ${enabled?'':'disabled'}>${t}</button>`;
+      }
+      html += '</div>';
+    }
+
+    html += '<div class="subtable-picker-label">Voice</div><div class="pill-row">';
+    for (const v of voiceOrder) {
+      if (!opts.voices.includes(v)) continue;
+      const active = sel.voice === v ? 'active' : '';
+      const enabled = avail.voicesForMood.has(v);
+      html += `<button class="pill ${active}" data-voice="${v}" ${enabled?'':'disabled'}>${v}</button>`;
+    }
+    html += '</div></div>';
+    return html;
+  }
+
+  function renderTableHtml() {
+    const p = state.currentParadigm;
+    const items = getTablePromptsForCurrent();
+    if (items.length === 0) {
+      return `<div class="paradigm-table-wrap"><div style="color:var(--muted); font-style:italic; text-align:center; padding:20px">No forms in this sub-table.</div></div>`;
+    }
+
+    if (p.category === 'verb') {
+      // Verb: 6 cells: persons × numbers
+      const cells = {};
+      for (const it of items) {
+        cells[it.parsed.person] = it;
+      }
+      const persons = ['1','2','3'];
+      const numbers = ['sg','pl'];
+      let html = `<div class="paradigm-table-wrap"><table class="paradigm-table">
+        <thead><tr><th class="row-label"></th><th>singular</th><th>plural</th></tr></thead>
+        <tbody>`;
+      for (const pn of persons) {
+        html += `<tr><td class="row-label">${pn}${suffixForPerson(pn)}</td>`;
+        for (const num of numbers) {
+          const key = pn + num;
+          const it = cells[key];
+          html += `<td>${renderCell(it)}</td>`;
+        }
+        html += `</tr>`;
+      }
+      html += `</tbody></table></div>`;
+      return html;
+    }
+
+    // Comparison: 2 cols (comparative, superlative), 1 row per positive
+    if (p.category === 'comparison') {
+      // Group by positive
+      const byPositive = {};
+      for (const it of items) {
+        if (it.parsed.type !== 'comparison') continue;
+        const pos = it.parsed.positive;
+        if (!byPositive[pos]) byPositive[pos] = {};
+        byPositive[pos][it.parsed.degree] = it;
+      }
+      let html = `<div class="paradigm-table-wrap"><table class="paradigm-table">
+        <thead><tr><th class="row-label">positive</th><th>comparative</th><th>superlative</th></tr></thead>
+        <tbody>`;
+      for (const pos of Object.keys(byPositive)) {
+        html += `<tr><td class="row-label">${escapeHtml(pos)}</td>`;
+        html += `<td>${renderCell(byPositive[pos].comparative)}</td>`;
+        html += `<td>${renderCell(byPositive[pos].superlative)}</td>`;
+        html += `</tr>`;
+      }
+      html += `</tbody></table></div>`;
+      return html;
+    }
+
+    // Declined (noun/adj/pronoun)
+    // Determine columns: which genders × numbers are present
+    const declined = items.filter(it => it.parsed.type === 'declined');
+    if (declined.length === 0) {
+      return `<div class="paradigm-table-wrap"><div style="color:var(--muted); padding:20px">(no declined forms)</div></div>`;
+    }
+    const genders = [];
+    const seenGenders = new Set();
+    for (const it of declined) {
+      const g = it.parsed.gender;
+      if (g && !seenGenders.has(g)) { seenGenders.add(g); genders.push(g); }
+    }
+    const hasGenders = genders.length > 0;
+    const numbers = [];
+    const seenNumbers = new Set();
+    for (const it of declined) {
+      if (!seenNumbers.has(it.parsed.number)) { seenNumbers.add(it.parsed.number); numbers.push(it.parsed.number); }
+    }
+    // Cases in canonical order
+    const caseOrder = ['nom','gen','dat','acc','abl','voc','loc'];
+    const cases = caseOrder.filter(c => declined.some(it => it.parsed.case === c));
+
+    // Build column list: each (number, gender) combination
+    const cols = [];
+    for (const num of numbers) {
+      if (hasGenders) {
+        for (const g of genders) cols.push({ number: num, gender: g });
+      } else {
+        cols.push({ number: num, gender: null });
+      }
+    }
+
+    let html = `<div class="paradigm-table-wrap"><table class="paradigm-table">
+      <thead>`;
+    // For multi-number multi-gender, show number row + gender row
+    if (hasGenders && numbers.length > 1) {
+      html += `<tr><th class="row-label"></th>`;
+      for (const num of numbers) {
+        html += `<th colspan="${genders.length}">${num === 'sg' ? 'singular' : 'plural'}</th>`;
+      }
+      html += `</tr><tr><th class="row-label"></th>`;
+      for (const num of numbers) {
+        for (const g of genders) html += `<th class="gender-header">${g}</th>`;
+      }
+      html += `</tr>`;
+    } else if (hasGenders) {
+      html += `<tr><th class="row-label">${numbers[0] === 'sg' ? 'sing.' : 'pl.'}</th>`;
+      for (const g of genders) html += `<th class="gender-header">${g}</th>`;
+      html += `</tr>`;
+    } else {
+      html += `<tr><th class="row-label"></th>`;
+      for (const num of numbers) html += `<th>${num === 'sg' ? 'singular' : 'plural'}</th>`;
+      html += `</tr>`;
+    }
+    html += `</thead><tbody>`;
+
+    for (const c of cases) {
+      html += `<tr><td class="row-label">${c}.</td>`;
+      for (const col of cols) {
+        const it = declined.find(x => x.parsed.case === c
+                                     && x.parsed.number === col.number
+                                     && x.parsed.gender === col.gender);
+        html += `<td>${renderCell(it)}</td>`;
+      }
+      html += `</tr>`;
+    }
+    html += `</tbody></table></div>`;
+    return html;
+  }
+
+  function suffixForPerson(p) {
+    return p === '1' ? 'st' : p === '2' ? 'nd' : 'rd';
+  }
+
+  function renderCell(it) {
+    if (!it) return `<span class="cell-empty">—</span>`;
+    const idx = it.idx;
+    const checked = state.tableChecked;
+    const result = state.tableResults[idx];
+    const val = state.tableValues[idx] || '';
+    let cls = 'cell-input';
+    if (checked) {
+      if (result === 'correct') cls += ' correct';
+      else if (result === 'wrong') cls += ' wrong';
+      else if (result === 'revealed') cls += ' revealed';
+    }
+    const displayVal = (checked && result !== 'correct') ? it.q.answer : val;
+    const disabled = checked ? 'readonly' : '';
+    return `<input type="text" class="${cls}" data-idx="${idx}"
+                   autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+                   value="${escapeAttr(displayVal)}" ${disabled}>`;
+  }
+
+  function wireTableEvents() {
+    const p = state.currentParadigm;
+    // Verb pills
+    if (p.category === 'verb') {
+      document.querySelectorAll('.pill[data-mood]').forEach(b => {
+        b.onclick = () => {
+          if (b.disabled) return;
+          state.verbSelection.mood = b.dataset.mood;
+          state.tableValues = {};
+          state.tableChecked = false;
+          state.tableResults = {};
+          renderTable();
+        };
+      });
+      document.querySelectorAll('.pill[data-tense]').forEach(b => {
+        b.onclick = () => {
+          if (b.disabled) return;
+          state.verbSelection.tense = b.dataset.tense;
+          state.tableValues = {};
+          state.tableChecked = false;
+          state.tableResults = {};
+          renderTable();
+        };
+      });
+      document.querySelectorAll('.pill[data-voice]').forEach(b => {
+        b.onclick = () => {
+          if (b.disabled) return;
+          state.verbSelection.voice = b.dataset.voice;
+          state.tableValues = {};
+          state.tableChecked = false;
+          state.tableResults = {};
+          renderTable();
+        };
+      });
+    }
+
+    // Cell inputs
+    document.querySelectorAll('.cell-input').forEach(inp => {
+      inp.addEventListener('input', (e) => {
+        const idx = parseInt(inp.dataset.idx);
+        state.tableValues[idx] = e.target.value;
+      });
+      inp.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          // jump to next cell
+          const all = [...document.querySelectorAll('.cell-input')];
+          const i = all.indexOf(inp);
+          if (i >= 0 && i < all.length - 1) all[i+1].focus();
+          else document.getElementById('check-table').click();
+        }
+      });
+    });
+
+    document.getElementById('check-table').onclick = () => {
+      if (state.tableChecked) {
+        // Reset
+        state.tableValues = {};
+        state.tableChecked = false;
+        state.tableResults = {};
+        renderTable();
+      } else {
+        checkTable();
+      }
+    };
+
+    document.getElementById('reveal').onclick = revealTable;
+
+    const continueBtn = document.getElementById('continue-table');
+    if (continueBtn) continueBtn.onclick = continueToNextSubtable;
+  }
+
+  function checkTable() {
+    const items = getTablePromptsForCurrent();
+    state.tableResults = {};
+    let correct = 0;
+    for (const it of items) {
+      const typed = state.tableValues[it.idx] || '';
+      const res = checkAnswer(typed, it.q.answer);
+      if (res.ok) {
+        state.tableResults[it.idx] = 'correct';
+        correct++;
+      } else {
+        state.tableResults[it.idx] = 'wrong';
+      }
+    }
+    state.tableChecked = true;
+    // Bump rep count if all correct AND we're not a verb (since verbs span multiple sub-tables)
+    const p = state.currentParadigm;
+    if (p.category !== 'verb' && correct === items.length && items.length > 0) {
+      state.repCountsTable[p.id] = (state.repCountsTable[p.id] || 0) + 1;
+      persist();
+    }
+    renderTable();
+  }
+
+  function revealTable() {
+    const items = getTablePromptsForCurrent();
+    state.tableResults = {};
+    for (const it of items) {
+      const typed = state.tableValues[it.idx] || '';
+      if (!typed) {
+        state.tableResults[it.idx] = 'revealed';
+      } else {
+        const res = checkAnswer(typed, it.q.answer);
+        state.tableResults[it.idx] = res.ok ? 'correct' : 'wrong';
+      }
+    }
+    state.tableChecked = true;
+    renderTable();
+  }
+
+  function continueToNextSubtable() {
+    // For verbs: advance through (mood, voice, tense) combinations.
+    const p = state.currentParadigm;
+    if (p.category !== 'verb') return;
+
+    const order = [];
+    const moodOrder = ['indicative','subjunctive','imperative'];
+    const tenseOrder = ['present','imperfect','future','perfect','pluperfect','future perfect'];
+    const voiceOrder = ['active','passive'];
+    const opts = getAvailableVerbOptions();
+    for (const m of moodOrder) {
+      if (!opts.moods.includes(m)) continue;
+      const tenses = m === 'imperative' ? [null] : tenseOrder.filter(t => opts.tenses.includes(t));
+      for (const t of tenses) {
+        for (const v of voiceOrder) {
+          if (!opts.voices.includes(v)) continue;
+          // does this combo exist?
+          const exists = p.prompts.some(q => {
+            const x = parsePromptLabel(q.label);
+            if (x.type !== 'verb') return false;
+            if (x.mood !== m) return false;
+            if (m !== 'imperative' && x.tense !== t) return false;
+            if (x.voice !== v) return false;
+            return true;
+          });
+          if (exists) order.push({ mood: m, tense: t, voice: v });
+        }
+      }
+    }
+    const cur = state.verbSelection;
+    const idx = order.findIndex(o => o.mood === cur.mood
+                                  && (cur.mood === 'imperative' || o.tense === cur.tense)
+                                  && o.voice === cur.voice);
+    if (idx === -1 || idx === order.length - 1) {
+      // Completed all sub-tables → count one full rep
+      state.repCountsTable[p.id] = (state.repCountsTable[p.id] || 0) + 1;
+      persist();
+      state.view = 'done';
+      renderDone('table');
+      return;
+    }
+    const next = order[idx + 1];
+    state.verbSelection = { mood: next.mood, tense: next.tense || cur.tense, voice: next.voice };
+    state.tableValues = {};
+    state.tableChecked = false;
+    state.tableResults = {};
+    renderTable();
+  }
+
+  // ============== COMPLETION ==============
+  function renderDone(mode) {
+    stopAudio();
+    const p = state.currentParadigm;
+    let reps, total;
+    if (mode === 'random') {
+      reps = state.repCounts[p.id];
+      total = p.prompts.length;
+    } else {
+      reps = state.repCountsTable[p.id];
+      total = p.prompts.length;
+    }
+    const progress = Math.min(100, (reps / 100) * 100);
+
+    barTitle.textContent = 'Repetītiō ' + reps;
+    barSubtitle.textContent = p.name;
+
+    const correctStat = mode === 'random'
+      ? `<b>${state.correctCount}</b> of <b>${total}</b> correct${state.wrongCount ? ` <span class="missed">· ${state.wrongCount} missed</span>` : ''}`
+      : `<b>${total}</b> forms completed`;
+
+    app.innerHTML = `
+      <div class="completion">
+        <h2>Repetītiō</h2>
+        <div class="repetitio-number">${reps}</div>
+        <div class="stats">${correctStat}</div>
+        <div class="rep-counter">
+          <div class="big">${reps}<span class="target"> / 100</span></div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${progress}%"></div>
+          </div>
+          <div class="lbl">${mode === 'random' ? 'random' : 'table'} repetitions</div>
+        </div>
+        <div class="actions" style="margin-top:32px">
+          <button class="btn ghost" id="back-mode">Modes</button>
+          <button class="btn primary" id="again">Again</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('again').onclick = () => {
+      if (mode === 'random') startDrill();
+      else startTable();
+    };
+    document.getElementById('back-mode').onclick = () => {
+      state.view = 'mode';
+      renderMode();
+    };
+  }
+
+  // ============== SETTINGS ==============
+  function openSettings() {
+    const totalReps = Object.values(state.repCounts).reduce((a,b)=>a+b, 0)
+                    + Object.values(state.repCountsTable).reduce((a,b)=>a+b, 0);
+    const paradigmsTouched = new Set([
+      ...Object.keys(state.repCounts).filter(k => state.repCounts[k]>0),
+      ...Object.keys(state.repCountsTable).filter(k => state.repCountsTable[k]>0)
+    ]).size;
+    const exportText = JSON.stringify({
+      repCounts: state.repCounts,
+      repCountsTable: state.repCountsTable
+    }, null, 2);
+
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop" id="backdrop">
+        <div class="modal" onclick="event.stopPropagation()">
+          <h3>Settings</h3>
+          <div class="row">
+            <label>Macron-strict checking
+              <div style="font-size:12px;color:var(--ink-mute);font-style:italic;margin-top:2px">require long marks to count as correct</div>
+            </label>
+            <div class="toggle ${state.macronStrict?'on':''}" id="macron-toggle"></div>
+          </div>
+          <div class="row">
+            <label>Total reps</label>
+            <span class="row-detail">${totalReps}</span>
+          </div>
+          <div class="row">
+            <label>Paradigms touched</label>
+            <span class="row-detail">${paradigmsTouched}</span>
+          </div>
+          <h3 style="margin-top:18px">Backup / restore</h3>
+          <div style="font-size:12px; color:var(--muted); font-style:italic; margin-bottom:6px">
+            Rep counts live in this browser only. Copy the JSON to back up or move to another device.
+          </div>
+          <textarea id="data-area">${escapeHtml(exportText)}</textarea>
+          <div class="small-actions">
+            <button class="small-btn" id="copy-btn">Copy</button>
+            <button class="small-btn" id="import-btn">Import</button>
+            <button class="small-btn danger" id="reset-btn">Reset all reps</button>
+          </div>
+          <div class="small-msg" id="msg"></div>
+          <div class="small-actions" style="margin-top:18px">
+            <button class="small-btn" id="close-btn" style="flex:1">Close</button>
+          </div>
+        </div>
+      </div>
+    `;
+    const msg = document.getElementById('msg');
+    function setMsg(text, cls) { msg.textContent = text; msg.className = 'small-msg ' + (cls || ''); }
+    const macronToggle = document.getElementById('macron-toggle');
+    macronToggle.onclick = () => {
+      state.macronStrict = !state.macronStrict;
+      macronToggle.classList.toggle('on', state.macronStrict);
+      persist();
+    };
+    document.getElementById('copy-btn').onclick = async () => {
+      const txt = document.getElementById('data-area').value;
+      try { await navigator.clipboard.writeText(txt); setMsg('Copied to clipboard.', 'success'); }
+      catch (e) { setMsg('Copy failed — select the text manually.', 'error'); }
+    };
+    document.getElementById('import-btn').onclick = () => {
+      const txt = document.getElementById('data-area').value;
+      try {
+        const parsed = JSON.parse(txt);
+        if (parsed.repCounts) state.repCounts = parsed.repCounts;
+        if (parsed.repCountsTable) state.repCountsTable = parsed.repCountsTable;
+        persist();
+        setMsg('Imported.', 'success');
+      } catch (e) { setMsg('Invalid JSON: ' + e.message, 'error'); }
+    };
+    document.getElementById('reset-btn').onclick = () => {
+      if (confirm('Reset all rep counts? This cannot be undone.')) {
+        state.repCounts = {};
+        state.repCountsTable = {};
+        persist();
+        setMsg('All counts cleared.', 'success');
+        document.getElementById('data-area').value = JSON.stringify({ repCounts: {}, repCountsTable: {} }, null, 2);
+      }
+    };
+    document.getElementById('close-btn').onclick = closeModal;
+    document.getElementById('backdrop').onclick = closeModal;
+  }
+  function closeModal() {
+    modalRoot.innerHTML = '';
+    if (state.view === 'picker') renderPicker();
+  }
+  document.getElementById('menu-btn').onclick = openSettings;
+
+  renderPicker();
+})();
+
+</script>
+</body>
+</html>

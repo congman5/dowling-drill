@@ -240,6 +240,38 @@
     border-color: var(--good);
   }
 
+  .subgroup-total {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 10px 6px 18px;
+    margin-top: -1px;
+    border-top: 1px solid var(--line);
+  }
+  .subgroup-total .sgt-label {
+    font-family: var(--display);
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-size: 9px;
+    color: var(--ink-mute);
+  }
+  .subgroup-total .sgt-val {
+    font-family: var(--mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .subgroup-total .sgt-target {
+    color: var(--ink-faint);
+    font-size: 11px;
+    font-weight: 400;
+  }
+  .subgroup-total.done .sgt-val { color: var(--good); }
+  .subgroup-total.done .sgt-label { color: var(--good); }
+
   /* Filter tabs */
   .filter-tabs {
     display: flex; gap: 0;
@@ -1022,6 +1054,22 @@
   }
   main > * { animation: fadein 0.25s ease-out both; }
 
+  .reps-pip-target {
+    color: var(--ink-faint);
+    font-size: 9px;
+    margin-left: 2px;
+    font-weight: 400;
+  }
+  .reps-pip.done .reps-pip-target { color: rgba(255,255,255,0.5); }
+
+  .subgroup-total {
+    cursor: pointer;
+    transition: border-color 0.1s;
+  }
+  .subgroup-total:active {
+    border-top-color: var(--accent);
+  }
+
 </style>
 </head>
 <body>
@@ -1048,25 +1096,26 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
 
   // ============== STATE ==============
   let state = {
-    view: 'picker',          // 'picker' | 'mode' | 'drill' | 'table' | 'done'
+    view: 'picker',
     macronStrict: false,
     filter: 'all',
     repCounts: {},
-    repCountsTable: {},       // separate rep counts per paradigm for table mode
+    repCountsTable: {},
+    defaultTarget: 100,
+    paradigmTargets: {},
+    subgroupTargets: {},
     currentParadigm: null,
-    currentMode: null,        // 'random' or 'table'
-    // random mode state
+    currentMode: null,
     promptOrder: [],
     promptIdx: 0,
     correctCount: 0,
     wrongCount: 0,
     answered: false,
     typed: '',
-    // table mode state — selected sub-table for verbs
     verbSelection: { mood: 'indicative', tense: 'present', voice: 'active' },
-    tableValues: {},          // form_index -> typed value
+    tableValues: {},
     tableChecked: false,
-    tableResults: {},         // form_index -> 'correct' | 'wrong' | 'revealed'
+    tableResults: {},
   };
 
   try {
@@ -1075,6 +1124,9 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
     if (saved.repCountsTable) state.repCountsTable = saved.repCountsTable;
     if (typeof saved.macronStrict === 'boolean') state.macronStrict = saved.macronStrict;
     if (saved.filter) state.filter = saved.filter;
+    if (typeof saved.defaultTarget === 'number') state.defaultTarget = saved.defaultTarget;
+    if (saved.paradigmTargets) state.paradigmTargets = saved.paradigmTargets;
+    if (saved.subgroupTargets) state.subgroupTargets = saved.subgroupTargets;
   } catch (e) {}
 
   function persist() {
@@ -1083,9 +1135,24 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         repCounts: state.repCounts,
         repCountsTable: state.repCountsTable,
         macronStrict: state.macronStrict,
-        filter: state.filter
+        filter: state.filter,
+        defaultTarget: state.defaultTarget,
+        paradigmTargets: state.paradigmTargets,
+        subgroupTargets: state.subgroupTargets,
       }));
     } catch (e) {}
+  }
+
+  function paradigmTarget(p) {
+    return state.paradigmTargets[p.id] != null ? state.paradigmTargets[p.id] : state.defaultTarget;
+  }
+  function subgroupKey(primary, secondary) {
+    return primary + '::' + (secondary || '');
+  }
+  function subgroupTarget(primary, secondary, items) {
+    const k = subgroupKey(primary, secondary);
+    if (state.subgroupTargets[k] != null) return state.subgroupTargets[k];
+    return items.reduce((s, p) => s + paradigmTarget(p), 0);
   }
 
   const app = document.getElementById('app');
@@ -1235,10 +1302,14 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
       for (const sub of subKeys) {
         if (hasMultipleSubs && sub) html += `<div class="subgroup-label">${sub}</div>`;
         html += '<ul class="paradigm-list">';
-        for (const p of subs[sub]) {
+        let subgroupTotal = 0;
+        const subgroupItems = subs[sub];
+        for (const p of subgroupItems) {
           const reps = (state.repCounts[p.id] || 0) + (state.repCountsTable[p.id] || 0);
+          subgroupTotal += reps;
+          const tgt = paradigmTarget(p);
           let pipCls = 'reps-pip';
-          if (reps >= 100) pipCls += ' done';
+          if (reps >= tgt) pipCls += ' done';
           else if (reps > 0) pipCls += ' partial';
           const parts = p.name.split(' — ');
           const display = parts.length === 2
@@ -1246,10 +1317,19 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
             : `<span class="lemma">${escapeHtml(p.name)}</span>`;
           html += `<li class="paradigm-item" data-id="${escapeAttr(p.id)}">
               <span class="paradigm-name">${display}</span>
-              <span class="paradigm-meta"><span class="form-count">${p.prompts.length}f</span><span class="${pipCls}">${reps}</span></span>
+              <span class="paradigm-meta"><span class="form-count">${p.prompts.length}f</span><span class="${pipCls}" data-target-paradigm="${escapeAttr(p.id)}">${reps}<span class="reps-pip-target">/${tgt}</span></span></span>
             </li>`;
         }
         html += '</ul>';
+        if (subgroupItems.length > 1) {
+          const targetTotal = subgroupTarget(primary, sub, subgroupItems);
+          const totalDone = subgroupTotal >= targetTotal;
+          const sgKey = subgroupKey(primary, sub);
+          html += `<div class="subgroup-total ${totalDone ? 'done' : ''}" data-target-subgroup="${escapeAttr(sgKey)}">
+            <span class="sgt-label">total</span>
+            <span class="sgt-val">${subgroupTotal}<span class="sgt-target">/${targetTotal}</span></span>
+          </div>`;
+        }
       }
     }
     app.innerHTML = html;
@@ -1257,7 +1337,21 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
       t.onclick = () => { state.filter = t.dataset.filter; persist(); renderPicker(); };
     });
     app.querySelectorAll('.paradigm-item').forEach(li => {
-      li.onclick = () => openMode(li.dataset.id);
+      li.onclick = (e) => {
+        const pip = e.target.closest('[data-target-paradigm]');
+        if (pip) {
+          e.stopPropagation();
+          openParadigmTargetEditor(pip.dataset.targetParadigm);
+          return;
+        }
+        openMode(li.dataset.id);
+      };
+    });
+    app.querySelectorAll('[data-target-subgroup]').forEach(el => {
+      el.onclick = (e) => {
+        e.stopPropagation();
+        openSubgroupTargetEditor(el.dataset.targetSubgroup);
+      };
     });
   }
 
@@ -1291,12 +1385,12 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
       <button class="mode-btn" data-mode="random">
         <span class="mb-title">Random drill</span>
         <span class="mb-desc">Each form prompted in turn.</span>
-        <span class="mb-reps" data-which="random" data-reps="${repsR}"><span class="mb-reps-num">${repsR}</span><span class="mb-reps-target">/100</span></span>
+        <span class="mb-reps" data-which="random" data-reps="${repsR}"><span class="mb-reps-num">${repsR}</span><span class="mb-reps-target">/${paradigmTarget(p)}</span></span>
       </button>
       <button class="mode-btn" data-mode="table">
         <span class="mb-title">Fill the table</span>
         <span class="mb-desc">Type every form into the paradigm table at once.</span>
-        <span class="mb-reps" data-which="table" data-reps="${repsT}"><span class="mb-reps-num">${repsT}</span><span class="mb-reps-target">/100</span></span>
+        <span class="mb-reps" data-which="table" data-reps="${repsT}"><span class="mb-reps-num">${repsT}</span><span class="mb-reps-target">/${paradigmTarget(p)}</span></span>
       </button>
     `;
     document.getElementById('back').onclick = renderPicker;
@@ -1315,6 +1409,144 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         else startTable();
       };
     });
+  }
+
+  // ============== TARGET EDITORS ==============
+  function openParadigmTargetEditor(paradigmId) {
+    const p = PARADIGMS.find(x => x.id === paradigmId);
+    if (!p) return;
+    const lemma = p.name.split(' \u2014 ')[0];
+    const cur = paradigmTarget(p);
+    const hasOverride = state.paradigmTargets[paradigmId] != null;
+
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop" id="te-backdrop">
+        <div class="modal" onclick="event.stopPropagation()">
+          <h3>Goal for ${escapeHtml(lemma)}</h3>
+          <div style="font-style:italic; color:var(--ink-mute); font-size:13px; margin-bottom:14px">
+            Per-paradigm rep target. ${hasOverride ? 'Custom override active.' : 'Currently using global default ('+state.defaultTarget+').'}
+          </div>
+          <div class="rep-editor-row">
+            <button class="rep-edit-btn" data-delta="-10">−10</button>
+            <button class="rep-edit-btn" data-delta="-1">−1</button>
+            <input type="number" id="te-num" min="1" inputmode="numeric" value="${cur}">
+            <button class="rep-edit-btn" data-delta="1">+1</button>
+            <button class="rep-edit-btn" data-delta="10">+10</button>
+          </div>
+          <div class="rep-quick-row">
+            <button class="rep-quick-btn" data-set="50">50</button>
+            <button class="rep-quick-btn" data-set="100">100</button>
+            <button class="rep-quick-btn" data-set="150">150</button>
+            <button class="rep-quick-btn" data-set="200">200</button>
+          </div>
+          <div class="small-actions" style="margin-top:16px; gap:8px">
+            ${hasOverride ? '<button class="small-btn danger" id="te-reset">Reset to default</button>' : ''}
+            <button class="small-btn" id="te-cancel" style="flex:1">Cancel</button>
+            <button class="small-btn" id="te-save" style="flex:1; border-color:var(--accent); color:var(--accent)">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+    wireTargetEditor('te', cur, (v) => {
+      if (v < 1) v = 1;
+      state.paradigmTargets[paradigmId] = v;
+      persist();
+    });
+    const resetBtn = document.getElementById('te-reset');
+    if (resetBtn) resetBtn.onclick = () => {
+      delete state.paradigmTargets[paradigmId];
+      persist();
+      modalRoot.innerHTML = '';
+      renderPicker();
+    };
+  }
+
+  function openSubgroupTargetEditor(sgKey) {
+    const [primary, secondary] = sgKey.split('::');
+    const items = [];
+    for (const p of PARADIGMS) {
+      const g = paradigmGroup(p);
+      if (g.primary === primary && (g.secondary || '') === (secondary || '')) {
+        items.push(p);
+      }
+    }
+    if (!items.length) return;
+    const cur = subgroupTarget(primary, secondary, items);
+    const sumOfParadigms = items.reduce((s, p) => s + paradigmTarget(p), 0);
+    const hasOverride = state.subgroupTargets[sgKey] != null;
+    const label = secondary || primary.replace(/^\d+\.\s*/, '');
+
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop" id="se-backdrop">
+        <div class="modal" onclick="event.stopPropagation()">
+          <h3>Goal for ${escapeHtml(label)}</h3>
+          <div style="font-style:italic; color:var(--ink-mute); font-size:13px; margin-bottom:14px">
+            ${items.length} paradigms. ${hasOverride ? 'Custom override active.' : 'Currently sum of per-paradigm goals ('+sumOfParadigms+').'}
+          </div>
+          <div class="rep-editor-row">
+            <button class="rep-edit-btn" data-delta="-100">−100</button>
+            <button class="rep-edit-btn" data-delta="-10">−10</button>
+            <input type="number" id="se-num" min="1" inputmode="numeric" value="${cur}">
+            <button class="rep-edit-btn" data-delta="10">+10</button>
+            <button class="rep-edit-btn" data-delta="100">+100</button>
+          </div>
+          <div class="rep-quick-row">
+            <button class="rep-quick-btn" data-set="${sumOfParadigms}">sum (${sumOfParadigms})</button>
+            <button class="rep-quick-btn" data-set="${items.length * 50}">${items.length * 50}</button>
+            <button class="rep-quick-btn" data-set="${items.length * 100}">${items.length * 100}</button>
+            <button class="rep-quick-btn" data-set="${items.length * 200}">${items.length * 200}</button>
+          </div>
+          <div class="small-actions" style="margin-top:16px; gap:8px">
+            ${hasOverride ? '<button class="small-btn danger" id="se-reset">Reset</button>' : ''}
+            <button class="small-btn" id="se-cancel" style="flex:1">Cancel</button>
+            <button class="small-btn" id="se-save" style="flex:1; border-color:var(--accent); color:var(--accent)">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+    wireTargetEditor('se', cur, (v) => {
+      if (v < 1) v = 1;
+      state.subgroupTargets[sgKey] = v;
+      persist();
+    });
+    const resetBtn = document.getElementById('se-reset');
+    if (resetBtn) resetBtn.onclick = () => {
+      delete state.subgroupTargets[sgKey];
+      persist();
+      modalRoot.innerHTML = '';
+      renderPicker();
+    };
+  }
+
+  function wireTargetEditor(prefix, initial, onSave) {
+    const input = document.getElementById(prefix + '-num');
+    function clampVal() {
+      let v = parseInt(input.value, 10);
+      if (isNaN(v) || v < 1) v = 1;
+      input.value = v;
+      return v;
+    }
+    function setVal(v) {
+      if (v < 1) v = 1;
+      input.value = v;
+    }
+    document.querySelectorAll('.rep-edit-btn').forEach(btn => {
+      btn.onclick = () => {
+        const delta = parseInt(btn.dataset.delta, 10);
+        setVal(clampVal() + delta);
+      };
+    });
+    document.querySelectorAll('.rep-quick-btn').forEach(btn => {
+      btn.onclick = () => setVal(parseInt(btn.dataset.set, 10));
+    });
+    input.addEventListener('input', clampVal);
+    document.getElementById(prefix + '-cancel').onclick = () => { modalRoot.innerHTML = ''; };
+    document.getElementById(prefix + '-backdrop').onclick = () => { modalRoot.innerHTML = ''; };
+    document.getElementById(prefix + '-save').onclick = () => {
+      onSave(clampVal());
+      modalRoot.innerHTML = '';
+      renderPicker();
+    };
   }
 
   // ============== MANUAL REP EDITOR ==============
@@ -2043,7 +2275,8 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
       reps = state.repCountsTable[p.id];
       total = p.prompts.length;
     }
-    const progress = Math.min(100, (reps / 100) * 100);
+    const tgt = paradigmTarget(p);
+    const progress = Math.min(100, (reps / tgt) * 100);
 
     barTitle.textContent = 'Repetītiō ' + reps;
     barSubtitle.textContent = p.name;
@@ -2058,7 +2291,7 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         <div class="repetitio-number">${reps}</div>
         <div class="stats">${correctStat}</div>
         <div class="rep-counter">
-          <div class="big">${reps}<span class="target"> / 100</span></div>
+          <div class="big">${reps}<span class="target"> / ${tgt}</span></div>
           <div class="progress-bar">
             <div class="progress-fill" style="width:${progress}%"></div>
           </div>
@@ -2090,7 +2323,10 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
     ]).size;
     const exportText = JSON.stringify({
       repCounts: state.repCounts,
-      repCountsTable: state.repCountsTable
+      repCountsTable: state.repCountsTable,
+      defaultTarget: state.defaultTarget,
+      paradigmTargets: state.paradigmTargets,
+      subgroupTargets: state.subgroupTargets,
     }, null, 2);
 
     modalRoot.innerHTML = `
@@ -2102,6 +2338,13 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
               <div style="font-size:12px;color:var(--ink-mute);font-style:italic;margin-top:2px">require long marks to count as correct</div>
             </label>
             <div class="toggle ${state.macronStrict?'on':''}" id="macron-toggle"></div>
+          </div>
+          <div class="row">
+            <label>Default rep goal
+              <div style="font-size:12px;color:var(--ink-mute);font-style:italic;margin-top:2px">per-paradigm target unless overridden</div>
+            </label>
+            <input type="number" id="default-target" min="1" inputmode="numeric" value="${state.defaultTarget}"
+                   style="width:70px;padding:6px 8px;font-family:var(--mono);font-size:14px;text-align:center;color:var(--accent);border:1px solid var(--line-strong);background:var(--bg);border-radius:2px;outline:none;-moz-appearance:textfield;appearance:textfield;">
           </div>
           <div class="row">
             <label>Total reps</label>
@@ -2130,6 +2373,16 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
     `;
     const msg = document.getElementById('msg');
     function setMsg(text, cls) { msg.textContent = text; msg.className = 'small-msg ' + (cls || ''); }
+    const dtInput = document.getElementById('default-target');
+    if (dtInput) {
+      dtInput.addEventListener('change', () => {
+        let v = parseInt(dtInput.value, 10);
+        if (isNaN(v) || v < 1) v = 1;
+        dtInput.value = v;
+        state.defaultTarget = v;
+        persist();
+      });
+    }
     const macronToggle = document.getElementById('macron-toggle');
     macronToggle.onclick = () => {
       state.macronStrict = !state.macronStrict;
@@ -2147,6 +2400,9 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         const parsed = JSON.parse(txt);
         if (parsed.repCounts) state.repCounts = parsed.repCounts;
         if (parsed.repCountsTable) state.repCountsTable = parsed.repCountsTable;
+        if (typeof parsed.defaultTarget === 'number') state.defaultTarget = parsed.defaultTarget;
+        if (parsed.paradigmTargets) state.paradigmTargets = parsed.paradigmTargets;
+        if (parsed.subgroupTargets) state.subgroupTargets = parsed.subgroupTargets;
         persist();
         setMsg('Imported.', 'success');
       } catch (e) { setMsg('Invalid JSON: ' + e.message, 'error'); }
@@ -2157,7 +2413,13 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         state.repCountsTable = {};
         persist();
         setMsg('All counts cleared.', 'success');
-        document.getElementById('data-area').value = JSON.stringify({ repCounts: {}, repCountsTable: {} }, null, 2);
+        document.getElementById('data-area').value = JSON.stringify({
+          repCounts: {},
+          repCountsTable: {},
+          defaultTarget: state.defaultTarget,
+          paradigmTargets: state.paradigmTargets,
+          subgroupTargets: state.subgroupTargets
+        }, null, 2);
       }
     };
     document.getElementById('close-btn').onclick = closeModal;

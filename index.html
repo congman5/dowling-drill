@@ -360,61 +360,122 @@
   }
 
 
-  /* ============ MODE ROW W/ STEPPER ============ */
-  .mode-row {
-    display: flex;
-    align-items: stretch;
-    gap: 8px;
-    margin-bottom: 10px;
+
+  /* ============ MODE BUTTON REP CHIP ============ */
+  .mode-btn {
+    position: relative;
   }
-  .mode-row .mode-btn {
-    margin-bottom: 0;
-    flex: 1;
-  }
-  .rep-stepper {
-    display: flex;
-    align-items: center;
+  .mb-reps {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: baseline;
+    gap: 1px;
+    padding: 5px 10px;
     border: 1px solid var(--line-strong);
-    background: var(--bg-card);
+    background: var(--bg);
     border-radius: 2px;
-    overflow: hidden;
-    flex-shrink: 0;
-    min-width: 110px;
-  }
-  .step-btn {
-    width: 32px;
-    flex-shrink: 0;
-    align-self: stretch;
-    background: transparent;
-    border: none;
-    color: var(--ink-soft);
-    font-family: var(--serif);
-    font-size: 22px;
-    line-height: 1;
-    cursor: pointer;
-    padding: 0;
-    transition: background 0.1s, color 0.1s;
-    -webkit-user-select: none;
-    user-select: none;
-  }
-  .step-btn:active {
-    background: var(--bg-elev);
-    color: var(--accent);
-  }
-  .step-val {
-    flex: 1;
-    text-align: center;
     font-family: var(--mono);
-    font-size: 13px;
-    color: var(--ink);
-    padding: 0 4px;
     font-variant-numeric: tabular-nums;
     line-height: 1;
+    cursor: pointer;
     -webkit-user-select: none;
     user-select: none;
+    transition: border-color 0.1s, color 0.1s;
   }
-  .step-num { color: var(--accent); font-weight: 600; }
-  .step-target { color: var(--ink-faint); font-size: 11px; }
+  .mb-reps:active {
+    border-color: var(--accent);
+    background: var(--bg-elev);
+  }
+  .mb-reps-num {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .mb-reps-target {
+    color: var(--ink-faint);
+    font-size: 11px;
+  }
+  /* When reps >= 100 */
+  .mb-reps[data-reps="100"] .mb-reps-num,
+  .mb-reps[data-reps="101"] .mb-reps-num,
+  .mb-reps[data-reps="102"] .mb-reps-num { color: var(--good); }
+
+  /* Reserve room for the chip in the description */
+  .mode-btn .mb-desc { padding-right: 90px; }
+
+  /* ============ REP EDITOR MODAL ============ */
+  .rep-editor-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .rep-edit-btn {
+    padding: 10px 8px;
+    min-width: 44px;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    color: var(--ink-soft);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .rep-edit-btn:active {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--bg-elev);
+  }
+  .rep-editor-row input[type="number"] {
+    flex: 1;
+    min-width: 60px;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--accent);
+    padding: 8px 6px;
+    border: 1px solid var(--line-strong);
+    background: var(--bg);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+  .rep-editor-row input[type="number"]::-webkit-outer-spin-button,
+  .rep-editor-row input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .rep-editor-row input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+  .rep-quick-row {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+  }
+  .rep-quick-btn {
+    flex: 1;
+    padding: 8px 0;
+    font-family: var(--mono);
+    font-size: 12px;
+    border: 1px solid var(--line);
+    background: transparent;
+    color: var(--ink-mute);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .rep-quick-btn:active {
+    border-color: var(--ink-soft);
+    color: var(--ink);
+  }
 
   /* ============ DRILL ============ */
   .drill-header {
@@ -1227,74 +1288,111 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         ${gloss ? `<div class="lemma-gloss">${escapeHtml(gloss)}</div>` : ''}
         ${pp ? `<div class="lemma-principal-parts">${escapeHtml(pp)}</div>` : ''}
       </div>
-      <div class="mode-row">
-        <button class="mode-btn" data-mode="random">
-          <span class="mb-title">Random drill</span>
-          <span class="mb-desc">Each form prompted in turn.</span>
-        </button>
-        <div class="rep-stepper" data-which="random" aria-label="Random reps">
-          <button class="step-btn" data-delta="-1" aria-label="decrement">−</button>
-          <span class="step-val"><span class="step-num">${repsR}</span><span class="step-target">/100</span></span>
-          <button class="step-btn" data-delta="1" aria-label="increment">+</button>
-        </div>
-      </div>
-      <div class="mode-row">
-        <button class="mode-btn" data-mode="table">
-          <span class="mb-title">Fill the table</span>
-          <span class="mb-desc">Type every form into the paradigm table at once.</span>
-        </button>
-        <div class="rep-stepper" data-which="table" aria-label="Table reps">
-          <button class="step-btn" data-delta="-1" aria-label="decrement">−</button>
-          <span class="step-val"><span class="step-num">${repsT}</span><span class="step-target">/100</span></span>
-          <button class="step-btn" data-delta="1" aria-label="increment">+</button>
-        </div>
-      </div>
+      <button class="mode-btn" data-mode="random">
+        <span class="mb-title">Random drill</span>
+        <span class="mb-desc">Each form prompted in turn.</span>
+        <span class="mb-reps" data-which="random" data-reps="${repsR}"><span class="mb-reps-num">${repsR}</span><span class="mb-reps-target">/100</span></span>
+      </button>
+      <button class="mode-btn" data-mode="table">
+        <span class="mb-title">Fill the table</span>
+        <span class="mb-desc">Type every form into the paradigm table at once.</span>
+        <span class="mb-reps" data-which="table" data-reps="${repsT}"><span class="mb-reps-num">${repsT}</span><span class="mb-reps-target">/100</span></span>
+      </button>
     `;
     document.getElementById('back').onclick = renderPicker;
     app.querySelectorAll('.mode-btn').forEach(btn => {
-      btn.onclick = () => {
+      btn.onclick = (e) => {
+        // If they tapped the rep chip, open the editor instead of starting the drill
+        const repChip = e.target.closest('.mb-reps');
+        if (repChip) {
+          e.preventDefault();
+          e.stopPropagation();
+          openRepEditor(repChip.dataset.which);
+          return;
+        }
         const mode = btn.dataset.mode;
         if (mode === 'random') startDrill();
         else startTable();
       };
     });
-    app.querySelectorAll('.rep-stepper').forEach(stepper => {
-      const which = stepper.dataset.which;  // 'random' or 'table'
-      const numEl = stepper.querySelector('.step-num');
-      stepper.querySelectorAll('.step-btn').forEach(btn => {
-        // Hold-to-repeat for fast adjustment
-        let interval = null;
-        let timeout = null;
+  }
+
+  // ============== MANUAL REP EDITOR ==============
+  function openRepEditor(which) {
+    const p = state.currentParadigm;
+    if (!p) return;
+    const target = which === 'random' ? state.repCounts : state.repCountsTable;
+    const cur = target[p.id] || 0;
+    const lemma = p.name.split(' \u2014 ')[0];
+    const modeName = which === 'random' ? 'Random drill' : 'Fill the table';
+
+    modalRoot.innerHTML = `
+      <div class="modal-backdrop" id="rep-backdrop">
+        <div class="modal" onclick="event.stopPropagation()">
+          <h3>${escapeHtml(modeName)} reps</h3>
+          <div style="font-style:italic; color:var(--ink-soft); font-size:14px; margin-bottom:14px">
+            ${escapeHtml(lemma)}
+          </div>
+
+          <div class="rep-editor-row">
+            <button class="rep-edit-btn" data-delta="-10">−10</button>
+            <button class="rep-edit-btn" data-delta="-1">−1</button>
+            <input type="number" id="rep-num" min="0" inputmode="numeric" value="${cur}">
+            <button class="rep-edit-btn" data-delta="1">+1</button>
+            <button class="rep-edit-btn" data-delta="10">+10</button>
+          </div>
+          <div class="rep-quick-row">
+            <button class="rep-quick-btn" data-set="0">0</button>
+            <button class="rep-quick-btn" data-set="25">25</button>
+            <button class="rep-quick-btn" data-set="50">50</button>
+            <button class="rep-quick-btn" data-set="75">75</button>
+            <button class="rep-quick-btn" data-set="100">100</button>
+          </div>
+          <div class="small-msg" id="rep-msg" style="text-align:center; margin-top:8px"></div>
+
+          <div class="small-actions" style="margin-top:16px; gap:8px">
+            <button class="small-btn" id="rep-cancel" style="flex:1">Cancel</button>
+            <button class="small-btn" id="rep-save" style="flex:1; border-color:var(--accent); color:var(--accent)">Save</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const input = document.getElementById('rep-num');
+    const msg = document.getElementById('rep-msg');
+    function clampVal() {
+      let v = parseInt(input.value, 10);
+      if (isNaN(v) || v < 0) v = 0;
+      input.value = v;
+      return v;
+    }
+    function setVal(v) {
+      if (v < 0) v = 0;
+      input.value = v;
+    }
+
+    document.querySelectorAll('.rep-edit-btn').forEach(btn => {
+      btn.onclick = () => {
         const delta = parseInt(btn.dataset.delta, 10);
-        const apply = () => {
-          const target = which === 'random' ? state.repCounts : state.repCountsTable;
-          const cur = target[p.id] || 0;
-          const next = Math.max(0, cur + delta);
-          if (next === cur) return;
-          target[p.id] = next;
-          numEl.textContent = next;
-          persist();
-        };
-        const start = (e) => {
-          e.preventDefault();
-          apply();
-          // After 400ms hold, repeat every 80ms
-          timeout = setTimeout(() => {
-            interval = setInterval(apply, 80);
-          }, 400);
-        };
-        const end = () => {
-          if (timeout) { clearTimeout(timeout); timeout = null; }
-          if (interval) { clearInterval(interval); interval = null; }
-        };
-        btn.addEventListener('mousedown', start);
-        btn.addEventListener('touchstart', start, { passive: false });
-        btn.addEventListener('mouseup', end);
-        btn.addEventListener('mouseleave', end);
-        btn.addEventListener('touchend', end);
-        btn.addEventListener('touchcancel', end);
-      });
+        setVal(clampVal() + delta);
+      };
     });
+    document.querySelectorAll('.rep-quick-btn').forEach(btn => {
+      btn.onclick = () => setVal(parseInt(btn.dataset.set, 10));
+    });
+    input.addEventListener('input', clampVal);
+
+    function close() { modalRoot.innerHTML = ''; }
+
+    document.getElementById('rep-cancel').onclick = close;
+    document.getElementById('rep-backdrop').onclick = close;
+    document.getElementById('rep-save').onclick = () => {
+      const v = clampVal();
+      target[p.id] = v;
+      persist();
+      close();
+      renderMode();  // re-render so the chip updates
+    };
   }
 
   // ============== RANDOM DRILL ==============

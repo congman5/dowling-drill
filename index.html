@@ -359,6 +359,63 @@
     letter-spacing: -0.01em;
   }
 
+
+  /* ============ MODE ROW W/ STEPPER ============ */
+  .mode-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .mode-row .mode-btn {
+    margin-bottom: 0;
+    flex: 1;
+  }
+  .rep-stepper {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--line-strong);
+    background: var(--bg-card);
+    border-radius: 2px;
+    overflow: hidden;
+    flex-shrink: 0;
+    min-width: 110px;
+  }
+  .step-btn {
+    width: 32px;
+    flex-shrink: 0;
+    align-self: stretch;
+    background: transparent;
+    border: none;
+    color: var(--ink-soft);
+    font-family: var(--serif);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.1s, color 0.1s;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .step-btn:active {
+    background: var(--bg-elev);
+    color: var(--accent);
+  }
+  .step-val {
+    flex: 1;
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--ink);
+    padding: 0 4px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .step-num { color: var(--accent); font-weight: 600; }
+  .step-target { color: var(--ink-faint); font-size: 11px; }
+
   /* ============ DRILL ============ */
   .drill-header {
     display: flex; align-items: center; justify-content: space-between;
@@ -1170,14 +1227,28 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         ${gloss ? `<div class="lemma-gloss">${escapeHtml(gloss)}</div>` : ''}
         ${pp ? `<div class="lemma-principal-parts">${escapeHtml(pp)}</div>` : ''}
       </div>
-      <button class="mode-btn" data-mode="random">
-        <span class="mb-title">Random drill</span>
-        <span class="mb-desc">Each form prompted in turn. <span class="mb-stat">${repsR}/100 reps</span></span>
-      </button>
-      <button class="mode-btn" data-mode="table">
-        <span class="mb-title">Fill the table</span>
-        <span class="mb-desc">Type every form into the paradigm table at once. <span class="mb-stat">${repsT}/100 reps</span></span>
-      </button>
+      <div class="mode-row">
+        <button class="mode-btn" data-mode="random">
+          <span class="mb-title">Random drill</span>
+          <span class="mb-desc">Each form prompted in turn.</span>
+        </button>
+        <div class="rep-stepper" data-which="random" aria-label="Random reps">
+          <button class="step-btn" data-delta="-1" aria-label="decrement">−</button>
+          <span class="step-val"><span class="step-num">${repsR}</span><span class="step-target">/100</span></span>
+          <button class="step-btn" data-delta="1" aria-label="increment">+</button>
+        </div>
+      </div>
+      <div class="mode-row">
+        <button class="mode-btn" data-mode="table">
+          <span class="mb-title">Fill the table</span>
+          <span class="mb-desc">Type every form into the paradigm table at once.</span>
+        </button>
+        <div class="rep-stepper" data-which="table" aria-label="Table reps">
+          <button class="step-btn" data-delta="-1" aria-label="decrement">−</button>
+          <span class="step-val"><span class="step-num">${repsT}</span><span class="step-target">/100</span></span>
+          <button class="step-btn" data-delta="1" aria-label="increment">+</button>
+        </div>
+      </div>
     `;
     document.getElementById('back').onclick = renderPicker;
     app.querySelectorAll('.mode-btn').forEach(btn => {
@@ -1186,6 +1257,43 @@ window.__AUDIO__ = {"1st decl::rosa": "audio/01_rosa.mp3", "2nd decl::amīcus": 
         if (mode === 'random') startDrill();
         else startTable();
       };
+    });
+    app.querySelectorAll('.rep-stepper').forEach(stepper => {
+      const which = stepper.dataset.which;  // 'random' or 'table'
+      const numEl = stepper.querySelector('.step-num');
+      stepper.querySelectorAll('.step-btn').forEach(btn => {
+        // Hold-to-repeat for fast adjustment
+        let interval = null;
+        let timeout = null;
+        const delta = parseInt(btn.dataset.delta, 10);
+        const apply = () => {
+          const target = which === 'random' ? state.repCounts : state.repCountsTable;
+          const cur = target[p.id] || 0;
+          const next = Math.max(0, cur + delta);
+          if (next === cur) return;
+          target[p.id] = next;
+          numEl.textContent = next;
+          persist();
+        };
+        const start = (e) => {
+          e.preventDefault();
+          apply();
+          // After 400ms hold, repeat every 80ms
+          timeout = setTimeout(() => {
+            interval = setInterval(apply, 80);
+          }, 400);
+        };
+        const end = () => {
+          if (timeout) { clearTimeout(timeout); timeout = null; }
+          if (interval) { clearInterval(interval); interval = null; }
+        };
+        btn.addEventListener('mousedown', start);
+        btn.addEventListener('touchstart', start, { passive: false });
+        btn.addEventListener('mouseup', end);
+        btn.addEventListener('mouseleave', end);
+        btn.addEventListener('touchend', end);
+        btn.addEventListener('touchcancel', end);
+      });
     });
   }
 
